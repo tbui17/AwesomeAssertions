@@ -282,7 +282,7 @@ public partial class StringAssertionSpecs
             // Assert
             act.Should().Throw<XunitException>()
                 .WithMessage("""
-                    Expected string to end with the same string, but they differ at index 1:
+                    Expected string to end with the same string, but they differ at index 0:
                        ↓ (actual)
                       "ABC"
                        "XY"
