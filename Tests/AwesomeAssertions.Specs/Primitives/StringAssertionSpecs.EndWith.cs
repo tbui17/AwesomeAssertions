@@ -188,5 +188,106 @@ public partial class StringAssertionSpecs
             act.Should().Throw<XunitException>().WithMessage(
                 "Expected someString not to end with \"ABC\"*some reason*, but found <null>.");
         }
+
+        [Fact]
+        public void When_long_string_does_not_end_with_single_char_it_should_show_aligned_diff()
+        {
+            // Act
+            Action act = () => "ABCDEFGHI".Should().EndWith("A");
+
+            // Assert
+            act.Should().Throw<XunitException>().WithMessage("""
+                                                             Expected string to have the expected end, but they differ at index 3:
+                                                                       ↓ (actual)
+                                                               "ABCEFGHI"
+                                                                      "A"
+                                                                       ↑ (expected).
+                                                             """);
+        }
+
+        [Fact]
+        public void When_long_string_does_not_end_with_long_string_it_should_show_aligned_diff()
+        {
+            // Act
+            Action act = () => "ABCDEFGHI".Should().EndWith("DEFGHX");
+
+            // Assert
+            act.Should().Throw<XunitException>()
+                .WithMessage("""
+                    Expected string to end with the same string, but they differ at index 8:
+                       ↓ (actual)
+                      "ABCDEFGHI"
+                         "DEFGHX"
+                               ↑ (expected).
+                    """);
+        }
+
+        [Fact]
+        public void When_long_string_does_not_end_with_long_string_at_middle_it_should_show_aligned_diff()
+        {
+            // Act
+            Action act = () => "ABCDEFGHI".Should().EndWith("DEXGHI");
+
+            // Assert
+            act.Should().Throw<XunitException>()
+                .WithMessage("""
+                             Expected string to end with the same string, but they differ at index 8:
+                                     ↓ (actual)
+                               "ABCDEFGHI"
+                                  "DEXGHI"
+                                     ↑ (expected).
+                             """);
+        }
+
+        [Fact]
+        public void When_very_long_string_does_not_end_with_string_pointer_adjusts_for_ellipses()
+        {
+            // Act
+            Action act = () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Should().EndWith("1YZ");
+
+            // Assert
+            act.Should().Throw<XunitException>()
+                .WithMessage("""
+                    Expected string to end with the same string, but they differ at index 23:
+                                ↓ (actual)
+                      "...RSTUVWXYZ"
+                               "1YZ"
+                                ↑ (expected).
+                    """);
+        }
+
+        [Fact]
+        public void When_string_with_newlines_does_not_end_with_string_it_should_show_escaped_diff()
+        {
+            // Act
+            Action act = () => "ABC\nDEF\nGHI".Should().EndWith("HI");
+
+            // Assert
+            act.Should().Throw<XunitException>()
+                .WithMessage("""
+                    Expected string to end with the same string, but they differ at index 9:
+                       ↓ (actual)
+                      "ABC\nDEF\nGHI"
+                                "HI"
+                                 ↑ (expected).
+                    """);
+        }
+
+        [Fact]
+        public void When_short_strings_have_no_common_chars_it_should_show_aligned_diff()
+        {
+            // Act
+            Action act = () => "ABC".Should().EndWith("XY");
+
+            // Assert
+            act.Should().Throw<XunitException>()
+                .WithMessage("""
+                    Expected string to end with the same string, but they differ at index 1:
+                       ↓ (actual)
+                      "ABC"
+                       "XY"
+                        ↑ (expected).
+                    """);
+        }
     }
 }
