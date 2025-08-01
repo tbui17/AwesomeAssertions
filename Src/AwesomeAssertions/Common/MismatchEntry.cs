@@ -13,16 +13,11 @@ internal class MismatchEntry
 
     public required int MismatchIndex { get; set; }
 
-    private int Ending => GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex() + SubjectLength;
-
-    private int SubjectLength =>
-        GetLengthOfPhraseToShowOrDefaultLength(Text[GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex()..]);
-
     public bool StartElided => GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex() > 0;
 
-    public bool EndElided => Text.Length > Ending;
+    public bool EndElided => Text.Length > GetTextSpan().End;
 
-    public int VisibleTextLengthBeforeMismatch => MismatchIndex - GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex();
+    private int VisibleTextLengthBeforeMismatch => MismatchIndex - GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex();
 
     private (int Start, int End) VisibleTextRange => (GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(), MismatchIndex);
 
