@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace AwesomeAssertions.Common;
 
-public class ElisionConfiguration
+internal class ElisionConfiguration
 {
     public int DefaultCharactersToKeep { get; set; } = 10;
     public int MinCharactersToKeep { get; set; } = 5;
