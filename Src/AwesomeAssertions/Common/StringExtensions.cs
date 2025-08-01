@@ -49,6 +49,11 @@ internal static class StringExtensions
         return string.Join(separator, values);
     }
 
+    public static string EscapeNewLines(this string value)
+    {
+        return value.Replace("\r", "\\r", StringComparison.OrdinalIgnoreCase).Replace("\n", "\\n", StringComparison.OrdinalIgnoreCase);
+    }
+
     /// <summary>
     /// Gets the quoted three characters at the specified index of a string, including the index itself.
     /// </summary>
