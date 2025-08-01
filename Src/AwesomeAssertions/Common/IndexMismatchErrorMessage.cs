@@ -1,6 +1,6 @@
 ﻿namespace AwesomeAssertions.Common;
 
-internal class IndexFailureMessage
+internal class IndexMismatchErrorMessage
 {
     public required string ExpectationDescription { get; set; }
 
@@ -16,5 +16,5 @@ internal class IndexFailureMessage
                  """;
     }
 
-    public static implicit operator string(IndexFailureMessage message) => message.ToString();
+    public static implicit operator string(IndexMismatchErrorMessage message) => message.ToString();
 }

@@ -12,7 +12,7 @@ internal static class IndexMismatchErrorMessageFactory
     private const char ArrowUp = '\u2191';
     private const char Ellipsis = '\u2026';
 
-    public static string CreateFailureMessage(string expectationDescription, string subject, string expected, int indexOfMismatch)
+    public static IndexMismatchErrorMessage CreateFailureMessage(string expectationDescription, string subject, string expected, int indexOfMismatch)
     {
         string locationDescription = $"at index {indexOfMismatch}";
         var matchingString = subject[..indexOfMismatch];
@@ -27,7 +27,7 @@ internal static class IndexMismatchErrorMessageFactory
 
         string mismatchSegment = GetMismatchSegment(subject, expected, indexOfMismatch).EscapePlaceholders();
 
-        return new IndexFailureMessage
+        return new IndexMismatchErrorMessage
         {
             ExpectationDescription = expectationDescription,
             LocationDescription = locationDescription,
