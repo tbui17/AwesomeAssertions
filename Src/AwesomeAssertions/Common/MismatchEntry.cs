@@ -3,49 +3,30 @@ using System.Linq;
 
 namespace AwesomeAssertions.Common;
 
-internal class ElisionConfiguration
-{
-    public int DefaultCharactersToKeep { get; set; } = 10;
-    public int MinCharactersToKeep { get; set; } = 5;
-    public int MaxCharactersToKeep { get; set; } = 15;
-    public int StringPrintLength { get; set; } = AssertionConfiguration.Current.Formatting.StringPrintLength;
-    public int MinStringPrintLength => StringPrintLength - 5;
-    public int MaxStringPrintLength => StringPrintLength + 10;
-}
-
 internal class MismatchEntry
 {
-    // formatting
-
-    public ElisionConfiguration ElisionConfiguration { get; set; } = new();
+    private ElisionConfiguration ElisionConfiguration { get; set; } = new();
 
     private const int LengthOfWhitespace = 1;
-
-    private int PhraseLengthToCheckForWordBoundary => (ElisionConfiguration.MaxCharactersToKeep - ElisionConfiguration.MinCharactersToKeep) + LengthOfWhitespace;
-
-    public int StringPrintLength { get; set; } = AssertionConfiguration.Current.Formatting.StringPrintLength;
-
-    public int MinStringPrintLength => StringPrintLength - 5;
-
-    public int MaxStringPrintLength => StringPrintLength + 10;
-
-    // impl
 
     public required string Text { get; set; }
 
     public required int MismatchIndex { get; set; }
 
-    public int Ending => GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex() + SubjectLength;
+    private int Ending => GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex() + SubjectLength;
 
-    public int SubjectLength => GetLengthOfPhraseToShowOrDefaultLength(Text[GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex()..]);
+    private int SubjectLength =>
+        GetLengthOfPhraseToShowOrDefaultLength(Text[GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex()..]);
 
-    public bool RightElided => Text.Length > Ending;
+    public bool StartElided => GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex() > 0;
+
+    public bool EndElided => Text.Length > Ending;
 
     public int VisibleTextLengthBeforeMismatch => MismatchIndex - GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex();
 
-    public bool LeftElided => GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex() > 0;
+    private (int Start, int End) VisibleTextRange => (GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(), MismatchIndex);
 
-    public TextSpan GetTextSpan()
+    private TextSpan GetTextSpan()
     {
         var trimStart = GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex();
         var subjectLength = GetLengthOfPhraseToShowOrDefaultLength(Text[trimStart..]);
@@ -58,10 +39,21 @@ internal class MismatchEntry
         };
     }
 
-    public (int Start, int End) VisibleTextRange => (GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(), MismatchIndex);
-    public string VisibleText2 => Text[VisibleTextRange.Start..VisibleTextRange.End];
+    private string VisibleText2 => Text[VisibleTextRange.Start..VisibleTextRange.End];
+
     public string VisibleText => GetTextSpan().VisibleText;
+
     public int NewlineCharacterCount => VisibleText2.Count(c => c is '\r' or '\n');
+
+    // TODO
+    public int WhitespaceCount
+    {
+        get
+        {
+            int count = VisibleTextLengthBeforeMismatch + NewlineCharacterCount;
+            return StartElided ? count + 1 : count;
+        }
+    }
 
     private int GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex()
     {
@@ -70,10 +62,14 @@ internal class MismatchEntry
             return 0;
         }
 
-        var indexToStartSearchingForWordBoundary = Math.Max(MismatchIndex - (ElisionConfiguration.MaxCharactersToKeep + LengthOfWhitespace), 0);
+        var indexToStartSearchingForWordBoundary =
+            Math.Max(MismatchIndex - (ElisionConfiguration.MaxCharactersToKeep + LengthOfWhitespace), 0);
+
+        var phraseLengthToCheckForWordBoundary =
+            (ElisionConfiguration.MaxCharactersToKeep - ElisionConfiguration.MinCharactersToKeep) + LengthOfWhitespace;
 
         var indexOfWordBoundary = Text
-                .IndexOf(' ', indexToStartSearchingForWordBoundary, PhraseLengthToCheckForWordBoundary) -
+                .IndexOf(' ', indexToStartSearchingForWordBoundary, phraseLengthToCheckForWordBoundary) -
             indexToStartSearchingForWordBoundary;
 
         if (indexOfWordBoundary >= 0)
@@ -87,13 +83,13 @@ internal class MismatchEntry
     private int GetLengthOfPhraseToShowOrDefaultLength(string value)
     {
         var indexOfWordBoundary = value
-            .LastIndexOf(' ', Math.Min(MaxStringPrintLength + LengthOfWhitespace, value.Length) - 1);
+            .LastIndexOf(' ', Math.Min(ElisionConfiguration.MaxStringPrintLength + LengthOfWhitespace, value.Length) - 1);
 
-        if (indexOfWordBoundary >= MinStringPrintLength)
+        if (indexOfWordBoundary >= ElisionConfiguration.MinStringPrintLength)
         {
             return indexOfWordBoundary;
         }
 
-        return Math.Min(StringPrintLength, value.Length);
+        return Math.Min(ElisionConfiguration.StringPrintLength, value.Length);
     }
 }

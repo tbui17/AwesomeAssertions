@@ -52,15 +52,7 @@ internal static class IndexMismatchErrorMessageFactory
             MismatchIndex = firstIndexOfMismatch
         };
 
-        int whiteSpaceCountBeforeArrow = subjectEntry.VisibleTextLengthBeforeMismatch + Prefix.Length;
-
-        if (subjectEntry.LeftElided)
-        {
-            whiteSpaceCountBeforeArrow++;
-        }
-
-        // since we need to escape newline when append must compensate manually
-        whiteSpaceCountBeforeArrow += subjectEntry.NewlineCharacterCount;
+        int whiteSpaceCountBeforeArrow = subjectEntry.WhitespaceCount + Prefix.Length;
 
         var sb = new StringBuilder();
 
@@ -74,20 +66,20 @@ internal static class IndexMismatchErrorMessageFactory
 
     private static void AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(StringBuilder stringBuilder, MismatchEntry entry)
     {
-        stringBuilder.Append(Prefix);
+        stringBuilder.Append(Prefix); // indent and opening quote
 
-        if (entry.LeftElided)
+        if (entry.StartElided)
         {
             stringBuilder.Append(Ellipsis);
         }
 
         stringBuilder.Append(entry.VisibleText.EscapeNewLines());
 
-        if (entry.RightElided)
+        if (entry.EndElided)
         {
             stringBuilder.Append(Ellipsis);
         }
 
-        stringBuilder.AppendLine(Suffix);
+        stringBuilder.AppendLine(Suffix); // closing quote
     }
 }
