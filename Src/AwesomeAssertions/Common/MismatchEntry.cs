@@ -5,65 +5,64 @@ namespace AwesomeAssertions.Common;
 
 internal class MismatchEntry
 {
-    private ElisionConfiguration ElisionConfiguration { get; set; } = new();
+    private ElisionConfiguration ElisionConfiguration { get; } = new();
 
     private const int LengthOfWhitespace = 1;
 
-    public required string Text { get; set; }
+    public required string Text { get; init; }
 
-    public required int MismatchIndex { get; set; }
+    public required int MismatchIndex { get; init; }
 
     public bool StartElided => GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex() > 0;
 
     public bool EndElided => Text.Length > GetTextSpan().End;
 
-    private int VisibleTextLengthBeforeMismatch => MismatchIndex - GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex();
-
-    private (int Start, int End) VisibleTextRange => (GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(), MismatchIndex);
-
     private TextSpan GetTextSpan()
     {
-        var trimStart = GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex();
-        var subjectLength = GetLengthOfPhraseToShowOrDefaultLength(Text[trimStart..]);
+        int trimStart = GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex();
+        int subjectLength = GetLengthOfPhraseToShowOrDefaultLength(Text[trimStart..]);
 
         return new TextSpan
         {
-            OriginalText = Text,
+            Text = Text,
             Start = trimStart,
             End = trimStart + subjectLength
         };
     }
 
-    private string VisibleText2 => Text[VisibleTextRange.Start..VisibleTextRange.End];
+    // TODO: ???
+    private string VisibleText2 => Text[GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex()..MismatchIndex];
 
     public string VisibleText => GetTextSpan().VisibleText;
 
-    public int NewlineCharacterCount => VisibleText2.Count(c => c is '\r' or '\n');
+    private int NewlineCharacterCount => VisibleText2.Count(c => c is '\r' or '\n');
 
-    // TODO
+    // TODO: name
     public int WhitespaceCount
     {
         get
         {
-            int count = VisibleTextLengthBeforeMismatch + NewlineCharacterCount;
+            int visibleTextLengthBeforeMismatch = MismatchIndex - GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex();
+            int count = visibleTextLengthBeforeMismatch + NewlineCharacterCount;
             return StartElided ? count + 1 : count;
         }
     }
 
     private int GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex()
     {
+        // if the slice of interest is small enough, we don't need to elide the start of the string
         if (MismatchIndex <= ElisionConfiguration.DefaultCharactersToKeep)
         {
             return 0;
         }
 
-        var indexToStartSearchingForWordBoundary =
+        int indexToStartSearchingForWordBoundary =
             Math.Max(MismatchIndex - (ElisionConfiguration.MaxCharactersToKeep + LengthOfWhitespace), 0);
 
-        var phraseLengthToCheckForWordBoundary =
+        int phraseLengthToCheckForWordBoundary =
             (ElisionConfiguration.MaxCharactersToKeep - ElisionConfiguration.MinCharactersToKeep) + LengthOfWhitespace;
 
-        var indexOfWordBoundary = Text
+        int indexOfWordBoundary = Text
                 .IndexOf(' ', indexToStartSearchingForWordBoundary, phraseLengthToCheckForWordBoundary) -
             indexToStartSearchingForWordBoundary;
 
@@ -77,7 +76,7 @@ internal class MismatchEntry
 
     private int GetLengthOfPhraseToShowOrDefaultLength(string value)
     {
-        var indexOfWordBoundary = value
+        int indexOfWordBoundary = value
             .LastIndexOf(' ', Math.Min(ElisionConfiguration.MaxStringPrintLength + LengthOfWhitespace, value.Length) - 1);
 
         if (indexOfWordBoundary >= ElisionConfiguration.MinStringPrintLength)

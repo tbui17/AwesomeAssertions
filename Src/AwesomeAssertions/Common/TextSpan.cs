@@ -6,7 +6,7 @@ public class TextSpan
 
     public int End { get; set; }
 
-    public string OriginalText { get; set; }
+    public string Text { get; set; }
 
-    public string VisibleText => OriginalText[Start..End];
+    public string VisibleText => Text[Start..End];
 }
