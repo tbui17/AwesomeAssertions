@@ -26,6 +26,29 @@ internal static class StringExtensions
         return -1;
     }
 
+    public static int IndexOfLastMismatch(this string value, string expected, IEqualityComparer<string> comparer)
+    {
+        var valueIndex = value.Length - 1;
+        var expectedIndex = expected.Length - 1;
+        while (valueIndex >= 0)
+        {
+            if (expectedIndex < 0 || !comparer.Equals(value[valueIndex..(valueIndex + 1)], expected[expectedIndex..(expectedIndex + 1)]))
+            {
+                return valueIndex;
+            }
+
+            valueIndex--;
+            expectedIndex--;
+        }
+
+        return -1;
+    }
+
+    public static string Join(this IEnumerable<char> values, string separator = "")
+    {
+        return string.Join(separator, values);
+    }
+
     /// <summary>
     /// Gets the quoted three characters at the specified index of a string, including the index itself.
     /// </summary>

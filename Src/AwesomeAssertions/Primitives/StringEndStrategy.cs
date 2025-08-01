@@ -28,15 +28,13 @@ internal class StringEndStrategy : IStringComparisonStrategy
             return;
         }
 
-        int indexOfMismatch = subject.Substring(subject.Length - expected.Length).IndexOfFirstMismatch(expected, comparer);
+        int indexOfMismatch = subject.IndexOfLastMismatch(expected, comparer);
 
         if (indexOfMismatch < 0)
         {
             return;
         }
 
-        assertionChain.FailWith(
-            $"{ExpectationDescription}{{0}}{{reason}}, but {{1}} differs near {subject.IndexedSegmentAt(indexOfMismatch)}.",
-            expected, subject);
+        assertionChain.FailWith(IndexMismatchErrorMessageFactory2.CreateFailureMessage(ExpectationDescription, subject, expected, indexOfMismatch));
     }
 }

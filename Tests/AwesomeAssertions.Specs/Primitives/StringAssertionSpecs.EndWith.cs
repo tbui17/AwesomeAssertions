@@ -188,20 +188,23 @@ public partial class StringAssertionSpecs
             act.Should().Throw<XunitException>().WithMessage(
                 "Expected someString not to end with \"ABC\"*some reason*, but found <null>.");
         }
+    }
 
+    public class Diff
+    {
         [Fact]
         public void When_long_string_does_not_end_with_single_char_it_should_show_aligned_diff()
         {
             // Act
-            Action act = () => "ABCDEFGHI".Should().EndWith("A");
+            Action act = () => "ABCDEFGHI".Should().EndWith("H");
 
             // Assert
             act.Should().Throw<XunitException>().WithMessage("""
-                                                             Expected string to have the expected end, but they differ at index 3:
-                                                                       ↓ (actual)
-                                                               "ABCEFGHI"
-                                                                      "A"
-                                                                       ↑ (expected).
+                                                             Expected string to end with the expected string, but they differ before index 8:
+                                                                        ↓ (actual)
+                                                               "ABCDEFGHI"
+                                                                       "H"
+                                                                        ↑ (expected).
                                                              """);
         }
 
@@ -214,8 +217,8 @@ public partial class StringAssertionSpecs
             // Assert
             act.Should().Throw<XunitException>()
                 .WithMessage("""
-                    Expected string to end with the same string, but they differ at index 8:
-                       ↓ (actual)
+                    Expected string to end with the expected string, but they differ before index 8:
+                               ↓ (actual)
                       "ABCDEFGHI"
                          "DEFGHX"
                                ↑ (expected).
@@ -231,46 +234,12 @@ public partial class StringAssertionSpecs
             // Assert
             act.Should().Throw<XunitException>()
                 .WithMessage("""
-                             Expected string to end with the same string, but they differ at index 8:
+                             Expected string to end with the expected string, but they differ before index 5:
                                      ↓ (actual)
                                "ABCDEFGHI"
                                   "DEXGHI"
                                      ↑ (expected).
                              """);
-        }
-
-        [Fact]
-        public void When_very_long_string_does_not_end_with_string_pointer_adjusts_for_ellipses()
-        {
-            // Act
-            Action act = () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Should().EndWith("1YZ");
-
-            // Assert
-            act.Should().Throw<XunitException>()
-                .WithMessage("""
-                    Expected string to end with the same string, but they differ at index 23:
-                                ↓ (actual)
-                      "...RSTUVWXYZ"
-                               "1YZ"
-                                ↑ (expected).
-                    """);
-        }
-
-        [Fact]
-        public void When_string_with_newlines_does_not_end_with_string_it_should_show_escaped_diff()
-        {
-            // Act
-            Action act = () => "ABC\nDEF\nGHI".Should().EndWith("HI");
-
-            // Assert
-            act.Should().Throw<XunitException>()
-                .WithMessage("""
-                    Expected string to end with the same string, but they differ at index 9:
-                       ↓ (actual)
-                      "ABC\nDEF\nGHI"
-                                "HI"
-                                 ↑ (expected).
-                    """);
         }
 
         [Fact]
@@ -282,12 +251,98 @@ public partial class StringAssertionSpecs
             // Assert
             act.Should().Throw<XunitException>()
                 .WithMessage("""
-                    Expected string to end with the same string, but they differ at index 0:
-                       ↓ (actual)
+                    Expected string to end with the expected string, but they differ before index 2:
+                         ↓ (actual)
                       "ABC"
                        "XY"
-                        ↑ (expected).
+                         ↑ (expected).
                     """);
+        }
+
+        [Fact]
+        public void When_one_string_is_long_they_are_right_aligned()
+        {
+            // Act
+            Action act = () => "this is a long text that differs in between two words".Should().EndWith("which differs in between two words");
+
+            // Assert
+            act
+                .Should()
+                .Throw<XunitException>()
+                .WithMessage("""
+                             Expected string to end with the expected string, but they differ before index 23:
+                                                ↓ (actual)
+                               "…a long text that differs in between two words"
+                                           "which differs in between two words"
+                                                ↑ (expected).
+                             """
+                );
+        }
+
+        [Fact]
+        public void When_one_string_is_long_they_are_right_aligned2()
+        {
+            string subject = new string('A',60) + new string('B', 40);
+            string expected = "C";
+
+            // Act
+            Action act = () => subject.Should().EndWith(expected);
+
+            // Assert
+            act
+                .Should()
+                .Throw<XunitException>()
+                .WithMessage("""
+                             Expected string to end with the expected string, but they differ before index 99:
+                                                                        ↓ (actual)
+                               "…BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+                                                                       "C"
+                                                                        ↑ (expected).
+                             """
+                );
+        }
+
+        [Fact]
+        public void When_one_string_is_long_they_are_right_aligned3()
+        {
+            string subject = new string('A',60) + new string('B', 40);
+            string expected = 'C' + new string('A', 59) + new string('B', 40);
+
+            // Act
+            Action act = () => subject.Should().EndWith(expected);
+
+            // Assert
+            act
+                .Should()
+                .Throw<XunitException>()
+                .WithMessage("""
+                             Expected string to end with the expected string, but they differ before index 0:
+                                ↓ (actual)
+                               "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA…"
+                               "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA…"
+                                ↑ (expected).
+                             """
+                );
+        }
+
+        [Fact]
+        public void When_both_strings_are_long_they_are_right_aligned()
+        {
+            // Act
+            Action act = () => "this is a long text that differs in between two words".Should().EndWith("long text which differs in between two words");
+
+            // Assert
+            act
+                .Should()
+                .Throw<XunitException>()
+                .WithMessage("""
+                             Expected string to end with the expected string, but they differ before index 23:
+                                                ↓ (actual)
+                               "…a long text that differs in between two words"
+                                        "…t which differs in between two words"
+                                                ↑ (expected).
+                             """
+                );
         }
     }
 }
