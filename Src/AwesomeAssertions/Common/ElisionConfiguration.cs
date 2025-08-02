@@ -1,6 +1,6 @@
 ﻿namespace AwesomeAssertions.Common;
 
-internal class ElisionConfiguration
+internal record struct ElisionConfiguration()
 {
     public int DefaultCharactersToKeep { get; set; } = 10;
 

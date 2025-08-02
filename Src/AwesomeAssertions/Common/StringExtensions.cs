@@ -49,6 +49,11 @@ internal static class StringExtensions
         return string.Join(separator, values);
     }
 
+    public static string Reversed(this string text)
+    {
+        return text.Reverse().Join();
+    }
+
     public static string EscapeNewLines(this string value)
     {
         return value.Replace("\r", "\\r", StringComparison.OrdinalIgnoreCase).Replace("\n", "\\n", StringComparison.OrdinalIgnoreCase);

@@ -40,56 +40,52 @@ internal static class IndexMismatchErrorMessageFactory2
     /// </summary>
     private static string GetMismatchSegment(string subject, string expected, int firstIndexOfMismatch)
     {
-        int trimStart = GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(subject, firstIndexOfMismatch);
-
-        int whiteSpaceCountBeforeArrow = (firstIndexOfMismatch - trimStart) + Prefix.Length;
-
-        if (trimStart > 0)
+        var revSubject = subject.Reversed();
+        var revExpected = expected.Reversed();
+        var subjectEntry = new MismatchEntry
         {
-            whiteSpaceCountBeforeArrow++;
-        }
+            Text = revSubject,
+            MismatchIndex = revSubject.IndexOfFirstMismatch(revExpected, StringComparer.Ordinal)
+        };
+        var expectedEntry = new MismatchEntry
+        {
+            Text = revExpected,
+            MismatchIndex = revExpected.IndexOfFirstMismatch(revSubject, StringComparer.Ordinal)
+        };
 
-        var visibleText = subject[trimStart..firstIndexOfMismatch];
-        whiteSpaceCountBeforeArrow += visibleText.Count(c => c is '\r' or '\n');
+        int whiteSpaceCountBeforeArrow = subjectEntry.WhitespaceCount + Prefix.Length;
 
         var sb = new StringBuilder();
 
         sb.Append(' ', whiteSpaceCountBeforeArrow).Append(ArrowDown).AppendLine(" (actual)");
-        AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(sb, subject, trimStart);
-        sb.Append(' ', subject.Length - expected.Length); // right-align the expected line
-        AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(sb, expected, 0);
-        sb.Append(' ', whiteSpaceCountBeforeArrow).Append(ArrowUp).Append(" (expected)");
+        var res1 = AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(new StringBuilder(), subjectEntry);
+        var res2 = AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(new StringBuilder(), expectedEntry);
+        res2 = res2.PadLeft(res1.Length);
+        sb.Append(res1);
+        sb.Append(res2);
+        sb.Append(' ', whiteSpaceCountBeforeArrow).Append(ArrowUp).Append(" (expected)"); // expected arrow must always have same column as actual arrow
 
         return sb.ToString();
     }
 
-    /// <summary>
-    /// Appends the prefix, the escaped visible <paramref name="text"/> phrase decorated with ellipsis and the suffix to the <paramref name="stringBuilder"/>.
-    /// </summary>
-    /// <remarks>When text phrase starts at <paramref name="indexOfEndingPhrase"/> and with a calculated length omits text on start or end, an ellipsis is added.</remarks>
-    private static void AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(StringBuilder stringBuilder,
-        string text, int indexOfEndingPhrase)
+    private static string AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(StringBuilder stringBuilder, MismatchEntry entry)
     {
-        var subjectLength = GetLengthOfPhraseToShowOrDefaultLength(text[indexOfEndingPhrase..]);
+        stringBuilder.Append(Prefix); // indent and opening quote
 
-        stringBuilder.Append(Prefix);
-
-        if (indexOfEndingPhrase > 0)
+        if (entry.EndElided)
         {
             stringBuilder.Append(Ellipsis);
         }
 
-        stringBuilder.Append(text
-            .Substring(indexOfEndingPhrase, subjectLength)
-            .Replace("\r", "\\r", StringComparison.OrdinalIgnoreCase)
-            .Replace("\n", "\\n", StringComparison.OrdinalIgnoreCase));
+        stringBuilder.Append(entry.VisibleTextEscaped.Reverse().Join().EscapeNewLines());
 
-        if (text.Length > (indexOfEndingPhrase + subjectLength))
+        if (entry.StartElided)
         {
             stringBuilder.Append(Ellipsis);
         }
 
-        stringBuilder.AppendLine(Suffix);
+        stringBuilder.AppendLine(Suffix); // closing quote
+        return stringBuilder.ToString();
     }
 
     /// <summary>

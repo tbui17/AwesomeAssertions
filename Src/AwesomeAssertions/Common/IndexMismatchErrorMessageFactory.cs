@@ -52,6 +52,8 @@ internal static class IndexMismatchErrorMessageFactory
             MismatchIndex = firstIndexOfMismatch
         };
 
+
+
         int whiteSpaceCountBeforeArrow = subjectEntry.WhitespaceCount + Prefix.Length;
 
         var sb = new StringBuilder();
@@ -73,7 +75,7 @@ internal static class IndexMismatchErrorMessageFactory
             stringBuilder.Append(Ellipsis);
         }
 
-        stringBuilder.Append(entry.VisibleText.EscapeNewLines());
+        stringBuilder.Append(entry.VisibleTextEscaped);
 
         if (entry.EndElided)
         {
