@@ -14,8 +14,7 @@ internal class MismatchEntry : ITextSpan
 
     public required int MismatchIndex { get; init; }
 
-    private int? start;
-    public int Start => start ??= GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex();
+    public int Start => GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex();
 
     public int End => Start + GetLengthOfPhraseToShowOrDefaultLength();
 
