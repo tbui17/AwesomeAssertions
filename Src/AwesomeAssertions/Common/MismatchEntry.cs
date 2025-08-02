@@ -17,7 +17,7 @@ internal class MismatchEntry : ITextSpan
     private int? start;
     public int Start => start ??= GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex();
 
-    public int End => Start + GetLengthOfPhraseToShowOrDefaultLength(Text);
+    public int End => Start + GetLengthOfPhraseToShowOrDefaultLength();
 
     public int RelativeMismatchIndex => MismatchIndex - Start;
 
@@ -69,17 +69,17 @@ internal class MismatchEntry : ITextSpan
         return MismatchIndex - ElisionConfiguration.DefaultCharactersToKeep;
     }
 
-    private int GetLengthOfPhraseToShowOrDefaultLength(string value)
+    private int GetLengthOfPhraseToShowOrDefaultLength()
     {
-        int indexOfWordBoundary = value
+        int indexOfWordBoundary = Text
             .LastIndexOf(' ',
-                Math.Min(Start + ElisionConfiguration.MaxStringPrintLength + LengthOfWhitespace, value.Length) - 1);
+                Math.Min(Start + ElisionConfiguration.MaxStringPrintLength + LengthOfWhitespace, Text.Length) - 1);
 
         if (indexOfWordBoundary >= (Start + ElisionConfiguration.MinStringPrintLength))
         {
             return indexOfWordBoundary - Start;
         }
 
-        return Math.Min(ElisionConfiguration.StringPrintLength, value.Length - Start);
+        return Math.Min(ElisionConfiguration.StringPrintLength, Text.Length - Start);
     }
 }
