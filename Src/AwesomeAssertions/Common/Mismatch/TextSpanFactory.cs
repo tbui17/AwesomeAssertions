@@ -20,6 +20,11 @@ internal class TextSpanFactory
 
     public MismatchTextSpan Create(string text, int mismatchIndex)
     {
+        return new MismatchTextSpan(CreateBase(text, mismatchIndex));
+    }
+
+    public BaseMismatchTextSpan CreateBase(string text, int mismatchIndex)
+    {
         var start = GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(text, mismatchIndex);
         var subjectLength = GetLengthOfPhraseToShowOrDefaultLength(text, start);
 
@@ -30,7 +35,7 @@ internal class TextSpanFactory
             Text = text
         };
 
-        return new MismatchTextSpan(textSpan, mismatchIndex);
+        return new BaseMismatchTextSpan(textSpan, mismatchIndex);
     }
 
     private static int GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(string text, int mismatchIndex)

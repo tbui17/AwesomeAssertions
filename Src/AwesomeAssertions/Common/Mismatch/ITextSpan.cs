@@ -14,3 +14,8 @@ internal interface ITextSpan
 
     int Length { get; }
 }
+
+internal interface IMismatchTextSpan : ITextSpan
+{
+    int MismatchIndex { get; }
+}

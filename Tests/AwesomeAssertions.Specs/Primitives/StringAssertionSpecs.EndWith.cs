@@ -271,10 +271,10 @@ public partial class StringAssertionSpecs
                 .Throw<XunitException>()
                 .WithMessage("""
                              Expected string to end with the expected string, but they differ before index 23:
-                                                ↓ (actual)
-                               "…a long text that differs in between two words"
-                                           "which differs in between two words"
-                                                ↑ (expected).
+                                                       ↓ (actual)
+                               "this is a long text that differs in…"
+                                                  "which differs in…"
+                                                       ↑ (expected).
                              """
                 );
         }
@@ -282,7 +282,7 @@ public partial class StringAssertionSpecs
         [Fact]
         public void When_one_string_is_long_they_are_right_aligned2()
         {
-            string subject = new string('A',60) + new string('B', 40);
+            string subject = new string('A',40) + new string('B', 60);
             string expected = "C";
 
             // Act
@@ -293,11 +293,11 @@ public partial class StringAssertionSpecs
                 .Should()
                 .Throw<XunitException>()
                 .WithMessage("""
-                             Expected string to end with the expected string, but they differ before index 99:
-                                                                        ↓ (actual)
-                               "…BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
-                                                                       "C"
-                                                                        ↑ (expected).
+                             * index 99:
+                                                                                  ↓ (actual)
+                               "…BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+                                                                                 "C"
+                                                                                  ↑ (expected).
                              """
                 );
         }
@@ -316,10 +316,10 @@ public partial class StringAssertionSpecs
                 .Should()
                 .Throw<XunitException>()
                 .WithMessage("""
-                             Expected string to end with the expected string, but they differ before index 0:
+                             * index 0:
                                 ↓ (actual)
-                               "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA…"
-                               "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA…"
+                               "AAAAAAAAAAA…"
+                               "CAAAAAAAAAA…"
                                 ↑ (expected).
                              """
                 );
@@ -336,11 +336,11 @@ public partial class StringAssertionSpecs
                 .Should()
                 .Throw<XunitException>()
                 .WithMessage("""
-                             Expected string to end with the expected string, but they differ before index 23:
-                                                ↓ (actual)
-                               "…a long text that differs in between two words"
-                                        "…t which differs in between two words"
-                                                ↑ (expected).
+                             * index 23:
+                                                       ↓ (actual)
+                               "this is a long text that differs in…"
+                                        "long text which differs in…"
+                                                       ↑ (expected).
                              """
                 );
         }
