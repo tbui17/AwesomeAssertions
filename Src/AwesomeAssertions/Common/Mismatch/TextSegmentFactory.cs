@@ -2,21 +2,21 @@
 
 namespace AwesomeAssertions.Common.Mismatch;
 
-internal class MismatchEntryFactory
+internal class TextSegmentFactory
 {
-    private int DefaultCharactersToKeep { get; } = 10;
+    private const int LengthOfWhitespace = 1;
 
-    private int MinCharactersToKeep { get; } = 5;
+    private const int DefaultCharactersToKeep = 10;
 
-    private int MaxCharactersToKeep { get; } = 15;
+    private const int MinCharactersToKeep = 5;
+
+    private const int MaxCharactersToKeep = 15;
 
     private int StringPrintLength { get; } = AssertionConfiguration.Current.Formatting.StringPrintLength;
 
     private int MinStringPrintLength => StringPrintLength - 5;
 
     private int MaxStringPrintLength => StringPrintLength + 10;
-
-    private const int LengthOfWhitespace = 1;
 
     public MismatchEntry Create(string text, int mismatchIndex)
     {
