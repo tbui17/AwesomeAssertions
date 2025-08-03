@@ -1,0 +1,75 @@
+﻿using System;
+
+namespace AwesomeAssertions.Common;
+
+internal class MismatchEntryFactory
+{
+    private int DefaultCharactersToKeep { get; } = 10;
+
+    private int MinCharactersToKeep { get; } = 5;
+
+    private int MaxCharactersToKeep { get; } = 15;
+
+    private int StringPrintLength { get; } = AssertionConfiguration.Current.Formatting.StringPrintLength;
+
+    private int MinStringPrintLength => StringPrintLength - 5;
+
+    private int MaxStringPrintLength => StringPrintLength + 10;
+
+    private const int LengthOfWhitespace = 1;
+
+    public MismatchEntry Create(string text, int mismatchIndex)
+    {
+        var start = GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(text, mismatchIndex);
+        var subjectLength = GetLengthOfPhraseToShowOrDefaultLength(text, start);
+
+        var textSpan = new TextSpan
+        {
+            Start = start,
+            End = start + subjectLength,
+            Text = text
+        };
+
+        return new MismatchEntry(textSpan, mismatchIndex);
+    }
+
+    private int GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(string text, int mismatchIndex)
+    {
+        // if the slice of interest is small enough, we do not need to elide the start of the string
+        if (mismatchIndex <= DefaultCharactersToKeep)
+        {
+            return 0;
+        }
+
+        int indexToStartSearchingForWordBoundary =
+            Math.Max(mismatchIndex - (MaxCharactersToKeep + LengthOfWhitespace), 0);
+
+        int phraseLengthToCheckForWordBoundary =
+            (MaxCharactersToKeep - MinCharactersToKeep) + LengthOfWhitespace;
+
+        int indexOfWordBoundary = text
+                .IndexOf(' ', indexToStartSearchingForWordBoundary, phraseLengthToCheckForWordBoundary) -
+            indexToStartSearchingForWordBoundary;
+
+        if (indexOfWordBoundary >= 0)
+        {
+            return indexToStartSearchingForWordBoundary + indexOfWordBoundary + LengthOfWhitespace;
+        }
+
+        return mismatchIndex - DefaultCharactersToKeep;
+    }
+
+    private int GetLengthOfPhraseToShowOrDefaultLength(string text, int start)
+    {
+        int indexOfWordBoundary = text
+            .LastIndexOf(' ',
+                Math.Min(start + MaxStringPrintLength + LengthOfWhitespace, text.Length) - 1);
+
+        if (indexOfWordBoundary >= (start + MinStringPrintLength))
+        {
+            return indexOfWordBoundary - start;
+        }
+
+        return Math.Min(StringPrintLength, text.Length - start);
+    }
+}

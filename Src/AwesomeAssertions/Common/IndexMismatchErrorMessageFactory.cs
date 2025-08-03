@@ -41,12 +41,16 @@ internal static class IndexMismatchErrorMessageFactory
     /// </summary>
     private static string GetMismatchSegment(string subject, string expected, int firstIndexOfMismatch)
     {
-        var subjectEntry = MismatchEntryFactory.Create2(subject, firstIndexOfMismatch);
-        var expectedEntry = MismatchEntryFactory.Create2(expected, firstIndexOfMismatch);
+        var subjectEntry = MismatchEntry.Create(subject, firstIndexOfMismatch);
+        var expectedEntry = MismatchEntry.Create(expected, firstIndexOfMismatch);
 
 
 
-        int whiteSpaceCountBeforeArrow = subjectEntry.WhitespaceCount + Prefix.Length;
+        int whiteSpaceCountBeforeArrow = subjectEntry.MismatchIndex + Prefix.Length;
+        if (subjectEntry.TextSpan.StartElided)
+        {
+            whiteSpaceCountBeforeArrow += 1;
+        }
 
         var sb = new StringBuilder();
 

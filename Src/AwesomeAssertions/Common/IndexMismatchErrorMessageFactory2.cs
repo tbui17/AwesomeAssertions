@@ -42,8 +42,8 @@ internal static class IndexMismatchErrorMessageFactory2
     {
         var revSubject = subject.Reversed();
         var revExpected = expected.Reversed();
-        var subjectEntry = MismatchEntryFactory.Create2(subject, firstIndexOfMismatch);
-        var expectedEntry = MismatchEntryFactory.Create2(expected, firstIndexOfMismatch);
+        var subjectEntry = MismatchEntry.Create(subject, firstIndexOfMismatch);
+        var expectedEntry = MismatchEntry.Create(expected, firstIndexOfMismatch);
         // var subjectEntry = new MismatchEntry
         // {
         //     Text = revSubject,
@@ -55,7 +55,7 @@ internal static class IndexMismatchErrorMessageFactory2
         //     MismatchIndex = revExpected.IndexOfFirstMismatch(revSubject, StringComparer.Ordinal)
         // };
 
-        int whiteSpaceCountBeforeArrow = subjectEntry.WhitespaceCount + Prefix.Length;
+        int whiteSpaceCountBeforeArrow = subjectEntry.MismatchIndex + Prefix.Length;
 
         var sb = new StringBuilder();
 
