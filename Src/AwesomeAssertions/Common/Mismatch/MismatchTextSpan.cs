@@ -6,7 +6,7 @@ internal class MismatchTextSpan(TextSpan textSpan, int mismatchIndex) : ITextSpa
 {
     public static MismatchTextSpan Create(string text, int mismatchIndex)
     {
-        var factory = new TextSegmentFactory();
+        var factory = new TextSpanFactory();
         return factory.Create(text, mismatchIndex);
     }
 

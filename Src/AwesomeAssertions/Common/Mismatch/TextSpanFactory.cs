@@ -2,7 +2,7 @@
 
 namespace AwesomeAssertions.Common.Mismatch;
 
-internal class TextSegmentFactory
+internal class TextSpanFactory
 {
     private const int LengthOfWhitespace = 1;
 
