@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using AwesomeAssertions.Formatting;
 
@@ -80,6 +81,18 @@ internal static class StringExtensions
     {
         return value.Replace("\r", "\\r", StringComparison.OrdinalIgnoreCase).Replace("\n", "\\n", StringComparison.OrdinalIgnoreCase);
     }
+
+    public static StringBuilder PadLeft(this StringBuilder sb, int totalWidth)
+    {
+        int spacesToAdd = totalWidth - sb.Length;
+        if (spacesToAdd > 0)
+        {
+            sb.Insert(0, " ", spacesToAdd);
+        }
+
+        return sb;
+    }
+
 
     /// <summary>
     /// Gets the quoted three characters at the specified index of a string, including the index itself.

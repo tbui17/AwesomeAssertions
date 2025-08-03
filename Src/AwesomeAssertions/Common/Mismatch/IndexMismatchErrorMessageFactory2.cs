@@ -67,7 +67,7 @@ internal static class IndexMismatchErrorMessageFactory2
         return sb.ToString();
     }
 
-    private static string AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(StringBuilder stringBuilder, IMismatchTextSpan textSpan)
+    private static StringBuilder AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(StringBuilder stringBuilder, IMismatchTextSpan textSpan)
     {
         stringBuilder.Append(Prefix); // indent and opening quote
 
@@ -84,6 +84,6 @@ internal static class IndexMismatchErrorMessageFactory2
         }
 
         stringBuilder.AppendLine(Suffix); // closing quote
-        return stringBuilder.ToString();
+        return stringBuilder;
     }
 }
