@@ -18,12 +18,19 @@ internal class TextSpanFactory
 
     private int MaxStringPrintLength => StringPrintLength + 10;
 
-    public MismatchTextSpan Create(string text, int mismatchIndex)
+    public IMismatchTextSpan Create(string text, int mismatchIndex)
     {
-        return new MismatchTextSpan(CreateBase(text, mismatchIndex));
+        var textSpan = CreateBase(text, mismatchIndex);
+        return new EscapeNewLinesMismatchTextSpanDecorator(textSpan);
     }
 
-    public BaseMismatchTextSpan CreateBase(string text, int mismatchIndex)
+    public IMismatchTextSpan CreateReversed(string text, int mismatchIndex)
+    {
+        var textSpan = CreateBase(text, mismatchIndex);
+        return new ReverseMismatchTextSpanDecorator(textSpan);
+    }
+
+    public MismatchTextSpan CreateBase(string text, int mismatchIndex)
     {
         var start = GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(text, mismatchIndex);
         var subjectLength = GetLengthOfPhraseToShowOrDefaultLength(text, start);
@@ -35,7 +42,7 @@ internal class TextSpanFactory
             Text = text
         };
 
-        return new BaseMismatchTextSpan(textSpan, mismatchIndex);
+        return new MismatchTextSpan(textSpan, mismatchIndex);
     }
 
     private static int GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(string text, int mismatchIndex)

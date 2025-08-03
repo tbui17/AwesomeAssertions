@@ -2,7 +2,7 @@
 
 namespace AwesomeAssertions.Common.Mismatch;
 
-internal class BaseMismatchTextSpan(ITextSpan textSpan, int mismatchIndex) : IMismatchTextSpan
+internal class MismatchTextSpan(ITextSpan textSpan, int mismatchIndex) : IMismatchTextSpan
 {
     public int Start => textSpan.Start;
 
@@ -19,14 +19,8 @@ internal class BaseMismatchTextSpan(ITextSpan textSpan, int mismatchIndex) : IMi
     public bool EndElided => textSpan.EndElided;
 }
 
-internal class MismatchTextSpan(BaseMismatchTextSpan textSpan) : IMismatchTextSpan
+internal class EscapeNewLinesMismatchTextSpanDecorator(IMismatchTextSpan textSpan) : IMismatchTextSpan
 {
-    public static MismatchTextSpan Create(string text, int mismatchIndex)
-    {
-        var factory = new TextSpanFactory();
-        return factory.Create(text, mismatchIndex);
-    }
-
     public int Start => GetRelativeOffset(textSpan.Start);
 
     public int End => GetRelativeOffset(textSpan.End - 1);
@@ -44,7 +38,7 @@ internal class MismatchTextSpan(BaseMismatchTextSpan textSpan) : IMismatchTextSp
     private int GetRelativeOffset(int index) => textSpan.VisibleText.Take(index + 1).Count(c => c is '\r' or '\n') + index;
 }
 
-internal class ReversedMismatchTextSpan(BaseMismatchTextSpan textSpan) : IMismatchTextSpan
+internal class ReverseMismatchTextSpanDecorator(IMismatchTextSpan textSpan) : IMismatchTextSpan
 {
     public int Start => textSpan.End;
 

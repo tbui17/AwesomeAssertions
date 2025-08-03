@@ -41,8 +41,9 @@ internal static class IndexMismatchErrorMessageFactory
     /// </summary>
     private static string GetMismatchSegment(string subject, string expected, int firstIndexOfMismatch)
     {
-        var subjectEntry = MismatchTextSpan.Create(subject, firstIndexOfMismatch);
-        var expectedEntry = MismatchTextSpan.Create(expected, firstIndexOfMismatch);
+        var factory = new TextSpanFactory();
+        var subjectEntry = factory.Create(subject, firstIndexOfMismatch);
+        var expectedEntry = factory.Create(expected, firstIndexOfMismatch);
 
 
 
@@ -62,7 +63,7 @@ internal static class IndexMismatchErrorMessageFactory
         return sb.ToString();
     }
 
-    private static void AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(StringBuilder stringBuilder, MismatchTextSpan textSpan)
+    private static void AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(StringBuilder stringBuilder, IMismatchTextSpan textSpan)
     {
         stringBuilder.Append(Prefix); // indent and opening quote
 

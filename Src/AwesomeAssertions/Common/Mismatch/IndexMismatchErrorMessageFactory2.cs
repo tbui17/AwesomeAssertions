@@ -47,7 +47,7 @@ internal static class IndexMismatchErrorMessageFactory2
         var subjectEntry = factory.CreateBase(revSubject, mismatchIndex);
         var expectedEntry = factory.CreateBase(revExpected, mismatchIndex);
 
-        int whiteSpaceCountBeforeArrow = ReversedTextSpan.GetIndexAfterReversal(subjectEntry.Length, subjectEntry.MismatchIndex) + Prefix.Length;
+        int whiteSpaceCountBeforeArrow = ReversedTextSpan.MirrorIndex(subjectEntry.Length, subjectEntry.MismatchIndex) + Prefix.Length;
 
         if (subjectEntry.EndElided)
         {

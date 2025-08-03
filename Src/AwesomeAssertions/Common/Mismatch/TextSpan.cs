@@ -29,21 +29,17 @@ internal readonly record struct TextSpan()
 internal class ReversedTextSpan(TextSpan textSpan)
     : ITextSpan
 {
-    public int Start => GetIndexAfterReversal(textSpan.Length, textSpan.End);
+    public int Start => MirrorIndex(textSpan.Length, textSpan.End);
 
-    public int End => GetIndexAfterReversal(textSpan.Length, textSpan.Start);
+    public int End => MirrorIndex(textSpan.Length, textSpan.Start);
 
-    public string Text => textSpan.Text;
+    public string VisibleText => textSpan.VisibleText;
 
-    public string VisibleText => textSpan.Text.Length is 0
-        ? ""
-        : Text[Start..End];
+    public bool StartElided => textSpan.EndElided;
 
-    public bool StartElided => Start > 0;
+    public bool EndElided => textSpan.StartElided;
 
-    public bool EndElided => End < Text.Length;
+    public int Length => textSpan.Length;
 
-    public int Length => End - Start;
-
-    public static int GetIndexAfterReversal(int stringLength, int originalIndex) => Math.Max(stringLength - originalIndex - 1, 0);
+    public static int MirrorIndex(int stringLength, int originalIndex) => Math.Max(stringLength - originalIndex - 1, 0);
 }
