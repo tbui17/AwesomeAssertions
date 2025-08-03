@@ -2,8 +2,9 @@
 
 namespace AwesomeAssertions.Common.Mismatch;
 
-internal class TruncateHelper(TruncationOptions options)
+internal class TruncateHelper
 {
+    private readonly TruncationOptions options = new();
     private const int LengthOfWhitespace = 1;
 
     public int GetStartIndexOfPhraseToShowBeforeTheTargetIndex(string text, int targetIndex)

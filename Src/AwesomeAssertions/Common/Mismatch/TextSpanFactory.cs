@@ -5,7 +5,7 @@ namespace AwesomeAssertions.Common.Mismatch;
 
 internal class TextSpanFactory(IEqualityComparer<string> comparer)
 {
-    private readonly TruncateHelper truncateHelper = new(new TruncationOptions());
+    private readonly TruncateHelper truncateHelper = new();
 
     public MismatchContext CreateAggregate(string subject, string expected)
     {
