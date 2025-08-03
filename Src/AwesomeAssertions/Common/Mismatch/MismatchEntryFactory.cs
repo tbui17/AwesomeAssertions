@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AwesomeAssertions.Common;
+namespace AwesomeAssertions.Common.Mismatch;
 
 internal class MismatchEntryFactory
 {

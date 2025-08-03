@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using AwesomeAssertions.Common;
+using AwesomeAssertions.Common.Mismatch;
 using AwesomeAssertions.Execution;
 
 namespace AwesomeAssertions.Primitives;

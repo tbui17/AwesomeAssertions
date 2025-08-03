@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace AwesomeAssertions.Common;
+namespace AwesomeAssertions.Common.Mismatch;
 
 internal static class IndexMismatchErrorMessageFactory2
 {

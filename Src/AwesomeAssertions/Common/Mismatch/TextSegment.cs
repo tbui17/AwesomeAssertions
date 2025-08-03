@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace AwesomeAssertions.Common;
+namespace AwesomeAssertions.Common.Mismatch;
 
 internal class TextSegment
 {
