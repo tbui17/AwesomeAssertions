@@ -24,7 +24,7 @@ internal static class IndexMismatchErrorMessageFactory
             locationDescription = $"on line {lineNumber + 1} and column {column} (index {indexOfMismatch})";
         }
 
-        string mismatchSegment = GetMismatchSegment(subject, expected, indexOfMismatch).EscapePlaceholders();
+        var mismatchSegment = GetMismatchSegment(subject, expected, indexOfMismatch);
 
         return new IndexMismatchErrorMessage
         {
@@ -38,7 +38,7 @@ internal static class IndexMismatchErrorMessageFactory
     /// Get the mismatch segment between <paramref name="expected"/> and <paramref name="subject"/>,
     /// when they differ at index <paramref name="firstIndexOfMismatch"/>.
     /// </summary>
-    private static string GetMismatchSegment(string subject, string expected, int firstIndexOfMismatch)
+    private static TextSegment GetMismatchSegment(string subject, string expected, int firstIndexOfMismatch)
     {
         var factory = new TextSpanFactory();
         var subjectEntry = factory.Create(subject, firstIndexOfMismatch);

@@ -18,7 +18,7 @@ internal class TextSegment
         }
     }
 
-    public override string ToString() => Lines.Select(x => x.Text.PadLeft(x.Length)).Join(Environment.NewLine);
+    public override string ToString() => Lines.Select(x => x.Text.PadLeft(x.Length)).Join(Environment.NewLine).EscapePlaceholders();
 
     public static implicit operator string(TextSegment segment) => segment.ToString();
 }
