@@ -72,6 +72,11 @@ internal static class StringExtensions
         return string.Join(separator, values);
     }
 
+    public static string Join(this IEnumerable<string> values, string separator = "")
+    {
+        return string.Join(separator, values);
+    }
+
     public static string Reversed(this string text)
     {
         return text.Reverse().Join();

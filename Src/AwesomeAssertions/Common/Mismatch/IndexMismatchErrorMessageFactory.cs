@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Text;
 
 namespace AwesomeAssertions.Common.Mismatch;
 
@@ -8,9 +7,9 @@ internal static class IndexMismatchErrorMessageFactory
     private const string Indentation = "  ";
     private const string Prefix = Indentation + "\"";
     private const string Suffix = "\"";
-    private const char ArrowDown = '\u2193';
-    private const char ArrowUp = '\u2191';
-    private const char Ellipsis = '\u2026';
+    private const string ArrowDown = "\u2193";
+    private const string ArrowUp = "\u2191";
+    private const string Ellipsis = "\u2026";
 
     public static IndexMismatchErrorMessage CreateFailureMessage(string expectationDescription, string subject, string expected, int indexOfMismatch)
     {
@@ -53,32 +52,36 @@ internal static class IndexMismatchErrorMessageFactory
             whiteSpaceCountBeforeArrow += 1;
         }
 
-        var sb = new StringBuilder();
-
-        sb.Append(' ', whiteSpaceCountBeforeArrow).Append(ArrowDown).AppendLine(" (actual)");
-        AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(sb, subjectEntry);
-        AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(sb, expectedEntry);
-        sb.Append(' ', whiteSpaceCountBeforeArrow).Append(ArrowUp).Append(" (expected)");
-
-        return sb.ToString();
+        return new TextSegment
+        {
+            Lines =
+            {
+                new()
+                {
+                    Text = $"{ArrowDown} (actual)",
+                    Indent = whiteSpaceCountBeforeArrow
+                },
+                new()
+                {
+                    Text = WrapText(subjectEntry)
+                },
+                new()
+                {
+                    Text = WrapText(expectedEntry)
+                },
+                new()
+                {
+                    Text = $"{ArrowUp} (expected)",
+                    Indent = whiteSpaceCountBeforeArrow
+                }
+            }
+        };
     }
 
-    private static void AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(StringBuilder stringBuilder, IMismatchTextSpan textSpan)
+    private static string WrapText(ITextSpan textSpan)
     {
-        stringBuilder.Append(Prefix); // indent and opening quote
-
-        if (textSpan.StartElided)
-        {
-            stringBuilder.Append(Ellipsis);
-        }
-
-        stringBuilder.Append(textSpan.VisibleText);
-
-        if (textSpan.EndElided)
-        {
-            stringBuilder.Append(Ellipsis);
-        }
-
-        stringBuilder.AppendLine(Suffix); // closing quote
+        var innerPrefix = textSpan.StartElided ? Ellipsis : "";
+        var innerSuffix = textSpan.EndElided ? Ellipsis : "";
+        return $"{Prefix}{innerPrefix}{textSpan.VisibleText}{innerSuffix}{Suffix}";
     }
 }
