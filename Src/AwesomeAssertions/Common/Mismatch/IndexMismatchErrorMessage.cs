@@ -2,11 +2,11 @@
 
 internal class IndexMismatchErrorMessage
 {
-    public required string ExpectationDescription { get; set; }
+    public string ExpectationDescription { get; set; } = "";
 
-    public required string LocationDescription { get; set; }
+    public string LocationDescription { get; set; } = "";
 
-    public required string MismatchSegment { get; set; }
+    public string MismatchSegment { get; set; } = "";
 
     public override string ToString()
     {

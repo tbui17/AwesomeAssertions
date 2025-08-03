@@ -53,9 +53,9 @@ internal static class StringExtensions
     {
         var valueIndex = value.Length - 1;
         var expectedIndex = expected.Length - 1;
-        while (valueIndex >= 0)
+        while (valueIndex >= 0 && expectedIndex >= 0)
         {
-            if (expectedIndex < 0 || !comparer.Equals(value[valueIndex..(valueIndex + 1)], expected[expectedIndex..(expectedIndex + 1)]))
+            if (!comparer.Equals(value[valueIndex..(valueIndex + 1)], expected[expectedIndex..(expectedIndex + 1)]))
             {
                 return valueIndex;
             }
