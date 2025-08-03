@@ -1,13 +1,13 @@
 ﻿namespace AwesomeAssertions.Common.Mismatch;
 
-internal record struct TextSpan
+internal readonly record struct TextSpan()
     : ITextSpan
 {
     public int Start { get; init; }
 
     public int End { get; init; }
 
-    public string Text { get; init; }
+    public string Text { get; init; } = "";
 
     public string VisibleText => Text[Start..End];
 
