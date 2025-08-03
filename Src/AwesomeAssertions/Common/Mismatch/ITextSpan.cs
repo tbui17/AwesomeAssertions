@@ -1,4 +1,6 @@
-﻿namespace AwesomeAssertions.Common.Mismatch;
+﻿using System.Linq;
+
+namespace AwesomeAssertions.Common.Mismatch;
 
 internal interface ITextSpan
 {
@@ -8,9 +10,9 @@ internal interface ITextSpan
 
     string VisibleText { get; }
 
-    bool StartElided { get; }
+    bool StartTruncated { get; }
 
-    bool EndElided { get; }
+    bool EndTruncated { get; }
 
     int Length { get; }
 }
@@ -18,4 +20,9 @@ internal interface ITextSpan
 internal interface IMismatchTextSpan : ITextSpan
 {
     int MismatchIndex { get; }
+}
+
+internal static class TextSpanExtensions
+{
+    public static int GetRelativeOffset(this ITextSpan textSpan, int index) => textSpan.VisibleText.Take(index + 1).Count(c => c is '\r' or '\n') + index;
 }

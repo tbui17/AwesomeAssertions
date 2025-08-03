@@ -30,12 +30,21 @@ internal class StringStartStrategy : IStringComparisonStrategy
         }
 
         int indexOfMismatch = subject.IndexOfFirstMismatch(expected, comparer);
+        var mismatch2 = subject.IndexOfFirstMismatch2(expected, comparer);
 
         if (indexOfMismatch < 0 || indexOfMismatch >= expected.Length)
         {
             return;
         }
 
-        assertionChain.FailWith(() => new FailReason(IndexMismatchErrorMessageFactory.CreateFailureMessage(ExpectationDescription, subject, expected, indexOfMismatch)));
+        var fac = new IndexMismatchErrorMessageFactory
+        {
+            ExpectationDescription = ExpectationDescription,
+            Context = new TextSpanFactory(comparer).CreateAggregate(subject, expected)
+        };
+
+        var res = fac.Create()!;
+
+        assertionChain.FailWith(() => new FailReason(res));
     }
 }

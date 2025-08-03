@@ -3,24 +3,26 @@ using System.Linq;
 
 namespace AwesomeAssertions.Common.Mismatch;
 
-internal class MismatchTextSpan(ITextSpan textSpan, int mismatchIndex) : IMismatchTextSpan
+internal class MismatchTextSpan(ITextSpan textSpan, int mismatchIndexValue = 0) : IMismatchTextSpan
 {
+    public int MismatchIndexValue { get; set; } = mismatchIndexValue;
+
     public int Start => textSpan.Start;
 
     public int End => textSpan.End;
 
-    public int Length => End - Start;
+    public int Length => textSpan.Length;
 
-    public int MismatchIndex => mismatchIndex - textSpan.Start;
+    public int MismatchIndex => MismatchIndexValue - textSpan.Start;
 
     public string VisibleText => textSpan.VisibleText;
 
-    public bool StartElided => textSpan.StartElided;
+    public bool StartTruncated => textSpan.StartTruncated;
 
-    public bool EndElided => textSpan.EndElided;
+    public bool EndTruncated => textSpan.EndTruncated;
 }
 
-internal class EscapeNewLinesMismatchTextSpanDecorator(IMismatchTextSpan textSpan) : IMismatchTextSpan
+internal class EscapeNewLinesMismatchTextSpanDecorator(ITextSpan textSpan) : IMismatchTextSpan
 {
     public int Start => GetRelativeOffset(textSpan.Start);
 
@@ -28,13 +30,23 @@ internal class EscapeNewLinesMismatchTextSpanDecorator(IMismatchTextSpan textSpa
 
     public int Length => End - Start;
 
-    public int MismatchIndex => GetRelativeOffset(textSpan.MismatchIndex);
+    public int MismatchIndex
+    {
+        get
+        {
+            if (textSpan is IMismatchTextSpan mismatchTextSpan)
+            {
+                return GetRelativeOffset(mismatchTextSpan.MismatchIndex);
+            }
+            throw new NotImplementedException();
+        }
+    }
 
     public string VisibleText => textSpan.VisibleText.EscapeNewLines();
 
-    public bool StartElided => textSpan.StartElided;
+    public bool StartTruncated => textSpan.StartTruncated;
 
-    public bool EndElided => textSpan.EndElided;
+    public bool EndTruncated => textSpan.EndTruncated;
 
     private int GetRelativeOffset(int index) => textSpan.VisibleText.Take(index + 1).Count(c => c is '\r' or '\n') + index;
 }
@@ -45,15 +57,15 @@ internal class ReverseMismatchTextSpan(IMismatchTextSpan textSpan) : IMismatchTe
 
     public int End => MirrorIndex(textSpan.Length, textSpan.Start);
 
-    public string VisibleText => textSpan.VisibleText.Reversed();
+    public string VisibleText => textSpan.VisibleText;
 
-    public bool StartElided => textSpan.EndElided;
+    public bool StartTruncated => textSpan.EndTruncated;
 
-    public bool EndElided => textSpan.StartElided;
+    public bool EndTruncated => textSpan.StartTruncated;
 
     public int Length => textSpan.Length;
 
     public int MismatchIndex => MirrorIndex(textSpan.Length, textSpan.MismatchIndex);
 
-    private static int MirrorIndex(int stringLength, int originalIndex) => Math.Max(stringLength - originalIndex - 1, 0);
+    private static int MirrorIndex(int stringLength, int originalIndex) => stringLength - originalIndex - 1;
 }

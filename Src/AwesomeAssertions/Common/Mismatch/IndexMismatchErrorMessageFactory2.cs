@@ -26,7 +26,14 @@ internal static class IndexMismatchErrorMessageFactory2
             locationDescription = $"on line {lineNumber + 1} and column {column} (index {indexOfMismatch})";
         }
 
-        string mismatchSegment = GetMismatchSegment(subject, expected, indexOfMismatch).EscapePlaceholders();
+        var revSubject = subject.Reversed();
+        var revExpected = expected.Reversed();
+        var mismatchIndex = revSubject.IndexOfFirstMismatch(revExpected, StringComparer.Ordinal);
+        var factory = new TextSpanFactory(StringComparer.Ordinal);
+        var subjectEntry = factory.CreateReversed(revSubject, mismatchIndex);
+        var expectedEntry = factory.CreateReversed(revExpected, mismatchIndex);
+
+        string mismatchSegment = GetMismatchSegment(subjectEntry, expectedEntry).EscapePlaceholders();
 
         return $$"""
             {{expectationDescription}}the expected string{reason}, but they differ {{locationDescription}}:
@@ -34,22 +41,11 @@ internal static class IndexMismatchErrorMessageFactory2
             """;
     }
 
-    /// <summary>
-    /// Get the mismatch segment between <paramref name="expected"/> and <paramref name="subject"/>,
-    /// when they differ at index <paramref name="firstIndexOfMismatch"/>.
-    /// </summary>
-    private static string GetMismatchSegment(string subject, string expected, int firstIndexOfMismatch)
+    private static string GetMismatchSegment(IMismatchTextSpan subjectEntry, ITextSpan expectedEntry)
     {
-        var revSubject = subject.Reversed();
-        var revExpected = expected.Reversed();
-        var mismatchIndex = revSubject.IndexOfFirstMismatch(revExpected, StringComparer.Ordinal);
-        var factory = new TextSpanFactory();
-        var subjectEntry = factory.CreateReversed(revSubject, mismatchIndex);
-        var expectedEntry = factory.CreateReversed(revExpected, mismatchIndex);
-
         int whiteSpaceCountBeforeArrow = subjectEntry.MismatchIndex + Prefix.Length;
 
-        if (subjectEntry.StartElided)
+        if (subjectEntry.StartTruncated)
         {
             whiteSpaceCountBeforeArrow++;
         }
@@ -67,18 +63,18 @@ internal static class IndexMismatchErrorMessageFactory2
         return sb.ToString();
     }
 
-    private static StringBuilder AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(StringBuilder stringBuilder, IMismatchTextSpan textSpan)
+    private static StringBuilder AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(StringBuilder stringBuilder, ITextSpan textSpan)
     {
         stringBuilder.Append(Prefix); // indent and opening quote
 
-        if (textSpan.StartElided)
+        if (textSpan.StartTruncated)
         {
             stringBuilder.Append(Ellipsis);
         }
 
-        stringBuilder.Append(textSpan.VisibleText);
+        stringBuilder.Append(textSpan.VisibleText.Reversed());
 
-        if (textSpan.EndElided)
+        if (textSpan.EndTruncated)
         {
             stringBuilder.Append(Ellipsis);
         }
