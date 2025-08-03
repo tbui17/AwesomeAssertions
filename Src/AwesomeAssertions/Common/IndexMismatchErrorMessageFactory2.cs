@@ -42,16 +42,18 @@ internal static class IndexMismatchErrorMessageFactory2
     {
         var revSubject = subject.Reversed();
         var revExpected = expected.Reversed();
-        var subjectEntry = new MismatchEntry
-        {
-            Text = revSubject,
-            MismatchIndex = revSubject.IndexOfFirstMismatch(revExpected, StringComparer.Ordinal)
-        };
-        var expectedEntry = new MismatchEntry
-        {
-            Text = revExpected,
-            MismatchIndex = revExpected.IndexOfFirstMismatch(revSubject, StringComparer.Ordinal)
-        };
+        var subjectEntry = MismatchEntryFactory.Create2(subject, firstIndexOfMismatch);
+        var expectedEntry = MismatchEntryFactory.Create2(expected, firstIndexOfMismatch);
+        // var subjectEntry = new MismatchEntry
+        // {
+        //     Text = revSubject,
+        //     MismatchIndex = revSubject.IndexOfFirstMismatch(revExpected, StringComparer.Ordinal)
+        // };
+        // var expectedEntry = new MismatchEntry
+        // {
+        //     Text = revExpected,
+        //     MismatchIndex = revExpected.IndexOfFirstMismatch(revSubject, StringComparer.Ordinal)
+        // };
 
         int whiteSpaceCountBeforeArrow = subjectEntry.WhitespaceCount + Prefix.Length;
 
@@ -72,14 +74,14 @@ internal static class IndexMismatchErrorMessageFactory2
     {
         stringBuilder.Append(Prefix); // indent and opening quote
 
-        if (entry.EndElided)
+        if (entry.TextSpan.EndElided)
         {
             stringBuilder.Append(Ellipsis);
         }
 
-        stringBuilder.Append(entry.VisibleTextEscaped.Reverse().Join().EscapeNewLines());
+        stringBuilder.Append(entry.VisibleText.Reverse().Join().EscapeNewLines());
 
-        if (entry.StartElided)
+        if (entry.TextSpan.StartElided)
         {
             stringBuilder.Append(Ellipsis);
         }

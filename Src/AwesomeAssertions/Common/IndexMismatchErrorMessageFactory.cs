@@ -41,16 +41,8 @@ internal static class IndexMismatchErrorMessageFactory
     /// </summary>
     private static string GetMismatchSegment(string subject, string expected, int firstIndexOfMismatch)
     {
-        var subjectEntry = new MismatchEntry
-        {
-            Text = subject,
-            MismatchIndex = firstIndexOfMismatch
-        };
-        var expectedEntry = new MismatchEntry
-        {
-            Text = expected,
-            MismatchIndex = firstIndexOfMismatch
-        };
+        var subjectEntry = MismatchEntryFactory.Create2(subject, firstIndexOfMismatch);
+        var expectedEntry = MismatchEntryFactory.Create2(expected, firstIndexOfMismatch);
 
 
 
@@ -70,14 +62,14 @@ internal static class IndexMismatchErrorMessageFactory
     {
         stringBuilder.Append(Prefix); // indent and opening quote
 
-        if (entry.StartElided)
+        if (entry.TextSpan.StartElided)
         {
             stringBuilder.Append(Ellipsis);
         }
 
-        stringBuilder.Append(entry.VisibleTextEscaped);
+        stringBuilder.Append(entry.VisibleText);
 
-        if (entry.EndElided)
+        if (entry.TextSpan.EndElided)
         {
             stringBuilder.Append(Ellipsis);
         }

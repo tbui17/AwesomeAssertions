@@ -26,6 +26,28 @@ internal static class StringExtensions
         return -1;
     }
 
+    /// <summary>
+    /// Finds the first index at which the longer string does not match the shorter string
+    /// string anymore, accounting for the specified <paramref name="comparer"/>.
+    /// </summary>
+    /// <returns>
+    /// The index of the mismatch, or -1 if there is no mismatch.
+    /// </returns>
+    public static int IndexOfFirstMismatch2(this string self, string other, IEqualityComparer<string> comparer)
+    {
+        int smallerStrLen = Math.Min(self.Length, other.Length);
+        int largerStrLen = Math.Max(self.Length, other.Length);
+        for (int index = 0; index < largerStrLen; index++)
+        {
+            if (index >= smallerStrLen || !comparer.Equals(self[index..(index + 1)], other[index..(index + 1)]))
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
     public static int IndexOfLastMismatch(this string value, string expected, IEqualityComparer<string> comparer)
     {
         var valueIndex = value.Length - 1;
