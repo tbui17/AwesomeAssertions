@@ -2,9 +2,9 @@
 
 namespace AwesomeAssertions.Common.Mismatch;
 
-internal class MismatchEntry(TextSpan textSpan, int mismatchIndex) : ITextSpan
+internal class MismatchTextSpan(TextSpan textSpan, int mismatchIndex) : ITextSpan
 {
-    public static MismatchEntry Create(string text, int mismatchIndex)
+    public static MismatchTextSpan Create(string text, int mismatchIndex)
     {
         var factory = new TextSegmentFactory();
         return factory.Create(text, mismatchIndex);

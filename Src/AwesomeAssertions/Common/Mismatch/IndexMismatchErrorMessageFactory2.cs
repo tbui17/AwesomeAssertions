@@ -42,8 +42,8 @@ internal static class IndexMismatchErrorMessageFactory2
     {
         var revSubject = subject.Reversed();
         var revExpected = expected.Reversed();
-        var subjectEntry = MismatchEntry.Create(subject, firstIndexOfMismatch);
-        var expectedEntry = MismatchEntry.Create(expected, firstIndexOfMismatch);
+        var subjectEntry = MismatchTextSpan.Create(subject, firstIndexOfMismatch);
+        var expectedEntry = MismatchTextSpan.Create(expected, firstIndexOfMismatch);
         // var subjectEntry = new MismatchEntry
         // {
         //     Text = revSubject,
@@ -70,18 +70,18 @@ internal static class IndexMismatchErrorMessageFactory2
         return sb.ToString();
     }
 
-    private static string AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(StringBuilder stringBuilder, MismatchEntry entry)
+    private static string AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(StringBuilder stringBuilder, MismatchTextSpan textSpan)
     {
         stringBuilder.Append(Prefix); // indent and opening quote
 
-        if (entry.EndElided)
+        if (textSpan.EndElided)
         {
             stringBuilder.Append(Ellipsis);
         }
 
-        stringBuilder.Append(entry.VisibleText.Reverse().Join().EscapeNewLines());
+        stringBuilder.Append(textSpan.VisibleText.Reverse().Join().EscapeNewLines());
 
-        if (entry.StartElided)
+        if (textSpan.StartElided)
         {
             stringBuilder.Append(Ellipsis);
         }

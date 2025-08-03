@@ -18,7 +18,7 @@ internal class TextSegmentFactory
 
     private int MaxStringPrintLength => StringPrintLength + 10;
 
-    public MismatchEntry Create(string text, int mismatchIndex)
+    public MismatchTextSpan Create(string text, int mismatchIndex)
     {
         var start = GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(text, mismatchIndex);
         var subjectLength = GetLengthOfPhraseToShowOrDefaultLength(text, start);
@@ -30,7 +30,7 @@ internal class TextSegmentFactory
             Text = text
         };
 
-        return new MismatchEntry(textSpan, mismatchIndex);
+        return new MismatchTextSpan(textSpan, mismatchIndex);
     }
 
     private int GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(string text, int mismatchIndex)
