@@ -55,5 +55,5 @@ internal class ReverseMismatchTextSpan(IMismatchTextSpan textSpan) : IMismatchTe
 
     public int MismatchIndex => MirrorIndex(textSpan.Length, textSpan.MismatchIndex);
 
-    public static int MirrorIndex(int stringLength, int originalIndex) => Math.Max(stringLength - originalIndex - 1, 0);
+    private static int MirrorIndex(int stringLength, int originalIndex) => Math.Max(stringLength - originalIndex - 1, 0);
 }

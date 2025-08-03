@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AwesomeAssertions.Common.Mismatch;
+﻿namespace AwesomeAssertions.Common.Mismatch;
 
 internal readonly record struct TextSpan()
     : ITextSpan
