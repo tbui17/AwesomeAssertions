@@ -47,7 +47,7 @@ internal static class IndexMismatchErrorMessageFactory
 
 
         int whiteSpaceCountBeforeArrow = subjectEntry.MismatchIndex + Prefix.Length;
-        if (subjectEntry.TextSpan.StartElided)
+        if (subjectEntry.StartElided)
         {
             whiteSpaceCountBeforeArrow += 1;
         }
@@ -66,14 +66,14 @@ internal static class IndexMismatchErrorMessageFactory
     {
         stringBuilder.Append(Prefix); // indent and opening quote
 
-        if (entry.TextSpan.StartElided)
+        if (entry.StartElided)
         {
             stringBuilder.Append(Ellipsis);
         }
 
         stringBuilder.Append(entry.VisibleText);
 
-        if (entry.TextSpan.EndElided)
+        if (entry.EndElided)
         {
             stringBuilder.Append(Ellipsis);
         }

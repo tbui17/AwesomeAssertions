@@ -74,14 +74,14 @@ internal static class IndexMismatchErrorMessageFactory2
     {
         stringBuilder.Append(Prefix); // indent and opening quote
 
-        if (entry.TextSpan.EndElided)
+        if (entry.EndElided)
         {
             stringBuilder.Append(Ellipsis);
         }
 
         stringBuilder.Append(entry.VisibleText.Reverse().Join().EscapeNewLines());
 
-        if (entry.TextSpan.StartElided)
+        if (entry.StartElided)
         {
             stringBuilder.Append(Ellipsis);
         }

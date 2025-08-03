@@ -2,15 +2,13 @@
 
 namespace AwesomeAssertions.Common.Mismatch;
 
-internal class MismatchEntry(TextSpan textSpan, int mismatchIndex)
+internal class MismatchEntry(TextSpan textSpan, int mismatchIndex) : ITextSpan
 {
     public static MismatchEntry Create(string text, int mismatchIndex)
     {
         var factory = new MismatchEntryFactory();
         return factory.Create(text, mismatchIndex);
     }
-
-    public TextSpan TextSpan => textSpan;
 
     public int Start => GetRelativeOffset(textSpan.Start);
 
@@ -23,6 +21,10 @@ internal class MismatchEntry(TextSpan textSpan, int mismatchIndex)
     public int MismatchIndex => GetRelativeOffset(RelativeMismatchIndex);
 
     public string VisibleText => textSpan.VisibleText.EscapeNewLines();
+
+    public bool StartElided => textSpan.StartElided;
+
+    public bool EndElided => textSpan.EndElided;
 
     private int GetRelativeOffset(int index) => textSpan.VisibleText.Take(index + 1).Count(c => c is '\r' or '\n') + index;
 }
