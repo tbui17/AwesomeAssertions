@@ -33,7 +33,7 @@ internal class TextSpanFactory
         return new MismatchTextSpan(textSpan, mismatchIndex);
     }
 
-    private int GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(string text, int mismatchIndex)
+    private static int GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(string text, int mismatchIndex)
     {
         // if the slice of interest is small enough, we do not need to elide the start of the string
         if (mismatchIndex <= DefaultCharactersToKeep)

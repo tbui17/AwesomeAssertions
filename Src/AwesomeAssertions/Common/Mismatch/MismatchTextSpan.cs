@@ -2,7 +2,7 @@
 
 namespace AwesomeAssertions.Common.Mismatch;
 
-internal class MismatchTextSpan(TextSpan textSpan, int mismatchIndex) : ITextSpan
+internal class MismatchTextSpan(ITextSpan textSpan, int mismatchIndex) : ITextSpan
 {
     public static MismatchTextSpan Create(string text, int mismatchIndex)
     {

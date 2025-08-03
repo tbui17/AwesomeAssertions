@@ -9,7 +9,9 @@ internal readonly record struct TextSpan()
 
     public string Text { get; init; } = "";
 
-    public string VisibleText => Text[Start..End];
+    public string VisibleText => Text.Length is 0
+        ? ""
+        : Text[Start..End];
 
     public bool StartElided => Start > 0;
 
