@@ -26,20 +26,3 @@ internal readonly record struct TextSpan()
     public int EndOffset => Text.Length - End;
 }
 
-internal class ReverseTextSpanDecorator(TextSpan textSpan)
-    : ITextSpan
-{
-    public int Start => MirrorIndex(textSpan.Length, textSpan.End);
-
-    public int End => MirrorIndex(textSpan.Length, textSpan.Start);
-
-    public string VisibleText => textSpan.VisibleText;
-
-    public bool StartElided => textSpan.EndElided;
-
-    public bool EndElided => textSpan.StartElided;
-
-    public int Length => textSpan.Length;
-
-    public static int MirrorIndex(int stringLength, int originalIndex) => Math.Max(stringLength - originalIndex - 1, 0);
-}

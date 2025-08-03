@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace AwesomeAssertions.Common.Mismatch;
 
@@ -38,13 +39,13 @@ internal class EscapeNewLinesMismatchTextSpanDecorator(IMismatchTextSpan textSpa
     private int GetRelativeOffset(int index) => textSpan.VisibleText.Take(index + 1).Count(c => c is '\r' or '\n') + index;
 }
 
-internal class ReverseMismatchTextSpanDecorator(IMismatchTextSpan textSpan) : IMismatchTextSpan
+internal class ReverseMismatchTextSpan(IMismatchTextSpan textSpan) : IMismatchTextSpan
 {
-    public int Start => textSpan.End;
+    public int Start => MirrorIndex(textSpan.Length, textSpan.End);
 
-    public int End => textSpan.Start;
+    public int End => MirrorIndex(textSpan.Length, textSpan.Start);
 
-    public string VisibleText => textSpan.VisibleText;
+    public string VisibleText => textSpan.VisibleText.Reversed();
 
     public bool StartElided => textSpan.EndElided;
 
@@ -52,5 +53,7 @@ internal class ReverseMismatchTextSpanDecorator(IMismatchTextSpan textSpan) : IM
 
     public int Length => textSpan.Length;
 
-    public int MismatchIndex => textSpan.MismatchIndex;
+    public int MismatchIndex => MirrorIndex(textSpan.Length, textSpan.MismatchIndex);
+
+    public static int MirrorIndex(int stringLength, int originalIndex) => Math.Max(stringLength - originalIndex - 1, 0);
 }

@@ -44,12 +44,12 @@ internal static class IndexMismatchErrorMessageFactory2
         var revExpected = expected.Reversed();
         var mismatchIndex = revSubject.IndexOfFirstMismatch(revExpected, StringComparer.Ordinal);
         var factory = new TextSpanFactory();
-        var subjectEntry = factory.CreateBase(revSubject, mismatchIndex);
-        var expectedEntry = factory.CreateBase(revExpected, mismatchIndex);
+        var subjectEntry = factory.CreateReversed(revSubject, mismatchIndex);
+        var expectedEntry = factory.CreateReversed(revExpected, mismatchIndex);
 
-        int whiteSpaceCountBeforeArrow = ReverseTextSpanDecorator.MirrorIndex(subjectEntry.Length, subjectEntry.MismatchIndex) + Prefix.Length;
+        int whiteSpaceCountBeforeArrow = subjectEntry.MismatchIndex + Prefix.Length;
 
-        if (subjectEntry.EndElided)
+        if (subjectEntry.StartElided)
         {
             whiteSpaceCountBeforeArrow++;
         }
@@ -71,14 +71,14 @@ internal static class IndexMismatchErrorMessageFactory2
     {
         stringBuilder.Append(Prefix); // indent and opening quote
 
-        if (textSpan.EndElided)
+        if (textSpan.StartElided)
         {
             stringBuilder.Append(Ellipsis);
         }
 
-        stringBuilder.Append(textSpan.VisibleText.Reverse().Join().EscapeNewLines());
+        stringBuilder.Append(textSpan.VisibleText);
 
-        if (textSpan.StartElided)
+        if (textSpan.EndElided)
         {
             stringBuilder.Append(Ellipsis);
         }

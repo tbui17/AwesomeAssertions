@@ -20,42 +20,27 @@ internal class TextSpanFactory
 
     public IMismatchTextSpan Create(string text, int mismatchIndex)
     {
-        var textSpan = CreateBase(text, mismatchIndex);
-        return new EscapeNewLinesMismatchTextSpanDecorator(textSpan);
+        return new EscapeNewLinesMismatchTextSpanDecorator(new MismatchTextSpan(CreateTextSpan(text, mismatchIndex),
+            mismatchIndex));
     }
 
     public IMismatchTextSpan CreateReversed(string text, int mismatchIndex)
     {
-        var start = GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(text, mismatchIndex);
-        var subjectLength = GetLengthOfPhraseToShowOrDefaultLength(text, start);
-
-        var textSpan = new TextSpan
-        {
-            Start = start,
-            End = start + subjectLength,
-            Text = text
-        };
-
-        var reversed = new ReverseTextSpanDecorator(textSpan);
-
-        var mismatchTextSpan = new MismatchTextSpan(reversed, mismatchIndex);
-
-        return new ReverseMismatchTextSpanDecorator(mismatchTextSpan);
+        return new EscapeNewLinesMismatchTextSpanDecorator(
+            new ReverseMismatchTextSpan(new MismatchTextSpan(CreateTextSpan(text, mismatchIndex), mismatchIndex)));
     }
 
-    public MismatchTextSpan CreateBase(string text, int mismatchIndex)
+    public TextSpan CreateTextSpan(string text, int mismatchIndex)
     {
         var start = GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(text, mismatchIndex);
         var subjectLength = GetLengthOfPhraseToShowOrDefaultLength(text, start);
 
-        var textSpan = new TextSpan
+        return new TextSpan
         {
             Start = start,
             End = start + subjectLength,
             Text = text
         };
-
-        return new MismatchTextSpan(textSpan, mismatchIndex);
     }
 
     private static int GetStartIndexOfPhraseToShowBeforeTheMismatchingIndex(string text, int mismatchIndex)
