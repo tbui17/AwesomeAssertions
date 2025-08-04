@@ -30,7 +30,6 @@ internal class StringStartStrategy : IStringComparisonStrategy
         }
 
         int indexOfMismatch = subject.IndexOfFirstMismatch(expected, comparer);
-        var mismatch2 = subject.IndexOfFirstMismatch2(expected, comparer);
 
         if (indexOfMismatch < 0 || indexOfMismatch >= expected.Length)
         {
@@ -40,7 +39,7 @@ internal class StringStartStrategy : IStringComparisonStrategy
         var fac = new IndexMismatchErrorMessageFactory
         {
             ExpectationDescription = ExpectationDescription,
-            Context = new TextSpanFactory(comparer).CreateAggregate(subject, expected)
+            Context = new TextSpanFactory(comparer).CreateContext(subject, expected)
         };
 
         var res = fac.Create()!;

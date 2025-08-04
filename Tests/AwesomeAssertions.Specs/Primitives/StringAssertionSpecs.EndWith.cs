@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using AwesomeAssertions.Execution;
 using Xunit;
 using Xunit.Sdk;
@@ -260,23 +261,67 @@ public partial class StringAssertionSpecs
         }
 
         [Fact]
-        public void When_one_string_is_long_they_are_right_aligned()
+        public void When_one_string_is_long_they_are_right_aligned22()
         {
             // Act
-            Action act = () => "this is a long text that differs in between two words".Should().EndWith("which differs in between two words");
+            Action act = () => "and they should do so for their sake from which this person was coming from this is a long text and thaT differs in between two words".Should().Be("such and when to do more like she should and man woman whicH differs in between two words");
+
+
+            var exc = act.Should().Throw<XunitException>();
+            using var _ = new AssertionScope();
+
+            var lines = exc.Which.Message.Split('\n');
+
+            lines[1].IndexOf("↓", StringComparison.Ordinal)
+                .Should().Be(lines[2].IndexOf("T", StringComparison.Ordinal))
+                .And.Be(lines[3].IndexOf("H", StringComparison.Ordinal))
+                .And.Be(lines[4].IndexOf("↑", StringComparison.Ordinal));
+
+            lines[2].Length.Should().Be(lines[3].Length);
+
 
             // Assert
-            act
-                .Should()
-                .Throw<XunitException>()
+            exc
                 .WithMessage("""
                              Expected string to end with the expected string, but they differ before index 23:
                                                        ↓ (actual)
-                               "this is a long text that differs in…"
-                                                  "which differs in…"
+                               "this is a long text thaT differs in…"
+                                                  "whicH differs in…"
                                                        ↑ (expected).
                              """
                 );
+        }
+
+        [Fact]
+        public void When_one_string_is_long_they_are_right_aligned()
+        {
+            // Act
+            Action act = () => "from which this person was coming from this is a long text and thaT differs in between two words".Should().EndWith("such and when to do more like she should and man woman whicH differs in between two words");
+
+
+            var exc = act.Should().Throw<XunitException>();
+            using var _ = new AssertionScope();
+
+            var lines = exc.Which.Message.Split('\n');
+
+            lines[1].IndexOf("↓", StringComparison.Ordinal)
+                .Should().Be(lines[2].IndexOf("H", StringComparison.Ordinal))
+                .And.Be(lines[3].IndexOf("T", StringComparison.Ordinal))
+                .And.Be(lines[3].IndexOf("↑", StringComparison.Ordinal));
+
+            lines[2].Length.Should().Be(lines[3].Length);
+
+
+            // Assert
+            exc
+                .WithMessage("""
+                         Expected string to end with the expected string, but they differ before index 23:
+                                                   ↓ (actual)
+                           "this is a long text thaT differs in…"
+                                              "whicH differs in…"
+                                                   ↑ (expected).
+                         """
+            );
         }
 
         [Fact]

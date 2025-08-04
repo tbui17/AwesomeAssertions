@@ -26,14 +26,13 @@ internal static class IndexMismatchErrorMessageFactory2
             locationDescription = $"on line {lineNumber + 1} and column {column} (index {indexOfMismatch})";
         }
 
-        var revSubject = subject.Reversed();
-        var revExpected = expected.Reversed();
-        var mismatchIndex = revSubject.IndexOfFirstMismatch(revExpected, StringComparer.Ordinal);
-        var factory = new TextSpanFactory(StringComparer.Ordinal);
-        var subjectEntry = factory.CreateReversed(revSubject, mismatchIndex);
-        var expectedEntry = factory.CreateReversed(revExpected, mismatchIndex);
 
-        string mismatchSegment = GetMismatchSegment(subjectEntry, expectedEntry).EscapePlaceholders();
+        var factory = new TextSpanFactory(StringComparer.Ordinal);
+
+
+        var ctx = factory.CreateContextReversed(subject, expected);
+
+        string mismatchSegment = GetMismatchSegment(ctx).EscapePlaceholders();
 
         return $$"""
             {{expectationDescription}}the expected string{reason}, but they differ {{locationDescription}}:
@@ -41,11 +40,11 @@ internal static class IndexMismatchErrorMessageFactory2
             """;
     }
 
-    private static string GetMismatchSegment(IMismatchTextSpan subjectEntry, ITextSpan expectedEntry)
+    private static string GetMismatchSegment(MismatchContext context)
     {
-        int whiteSpaceCountBeforeArrow = subjectEntry.MismatchIndex + Prefix.Length;
+        int whiteSpaceCountBeforeArrow = context.AdjustedIndexOfMismatch + Prefix.Length;
 
-        if (subjectEntry.StartTruncated)
+        if (context.SubjectSpan.StartTruncated)
         {
             whiteSpaceCountBeforeArrow++;
         }
@@ -53,8 +52,8 @@ internal static class IndexMismatchErrorMessageFactory2
         var sb = new StringBuilder();
 
         sb.Append(' ', whiteSpaceCountBeforeArrow).Append(ArrowDown).AppendLine(" (actual)");
-        var res1 = AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(new StringBuilder(), subjectEntry);
-        var res2 = AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(new StringBuilder(), expectedEntry);
+        var res1 = AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(new StringBuilder(), context.SubjectSpan);
+        var res2 = AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(new StringBuilder(), context.ExpectedSpan);
         res2 = res2.PadLeft(res1.Length);
         sb.Append(res1);
         sb.Append(res2);
@@ -72,7 +71,7 @@ internal static class IndexMismatchErrorMessageFactory2
             stringBuilder.Append(Ellipsis);
         }
 
-        stringBuilder.Append(textSpan.VisibleText.Reversed());
+        stringBuilder.Append(textSpan.VisibleText);
 
         if (textSpan.EndTruncated)
         {

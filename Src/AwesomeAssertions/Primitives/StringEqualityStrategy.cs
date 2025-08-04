@@ -29,10 +29,12 @@ internal class StringEqualityStrategy : IStringComparisonStrategy
             return;
         }
 
+        var ctx = new TextSpanFactory(comparer).CreateContext(subject, expected);
+
         var msg = new IndexMismatchErrorMessageFactory
         {
             ExpectationDescription = ExpectationDescription,
-            Context = new TextSpanFactory(comparer).CreateAggregate(subject, expected)
+            Context = ctx
         }.Create();
 
         if (msg is null)

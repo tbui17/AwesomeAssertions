@@ -9,15 +9,17 @@ internal record TextSpan
 
     public required string Text { get; set; } = "";
 
-    public virtual string VisibleText => Text.Length is 0
+    public string VisibleText => FullLength is 0
         ? ""
         : Text[Start..End];
 
-    public virtual bool StartTruncated => Start > 0;
+    public bool StartTruncated => Start > 0;
 
-    public virtual bool EndTruncated => End < Text.Length;
+    public bool EndTruncated => End < FullLength;
 
-    public virtual int Length => End - Start;
+    public int Length => End - Start;
+
+    public int FullLength => Text.Length;
 
     public SubTextSpan Subspan(int start, int end) => new(this, start, end);
 
@@ -36,15 +38,15 @@ internal record TextSpan
 
 internal class ReverseTextSpan(ITextSpan textSpan) : ITextSpan
 {
-    public int Start => MirrorIndex(textSpan.Length, textSpan.End);
+    public int Start => MirrorIndex(textSpan.Length, textSpan.End - 1);
 
     public int End => MirrorIndex(textSpan.Length, textSpan.Start);
 
     public string VisibleText => textSpan.VisibleText;
 
-    public bool StartTruncated => textSpan.EndTruncated;
+    public bool StartTruncated => Start > 0;
 
-    public bool EndTruncated => textSpan.StartTruncated;
+    public bool EndTruncated => End < textSpan.Length;
 
     public int Length => textSpan.Length;
 

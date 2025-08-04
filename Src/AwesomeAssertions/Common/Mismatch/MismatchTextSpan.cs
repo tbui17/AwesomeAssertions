@@ -24,11 +24,11 @@ internal class MismatchTextSpan(ITextSpan textSpan, int mismatchIndexValue = 0) 
 
 internal class EscapeNewLinesMismatchTextSpanDecorator(ITextSpan textSpan) : IMismatchTextSpan
 {
-    public int Start => GetRelativeOffset(textSpan.Start);
+    public int Start => throw new NotImplementedException();
 
-    public int End => GetRelativeOffset(textSpan.End - 1);
+    public int End => throw new NotImplementedException();
 
-    public int Length => End - Start;
+    public int Length => throw new NotImplementedException();
 
     public int MismatchIndex
     {
@@ -57,7 +57,7 @@ internal class ReverseMismatchTextSpan(IMismatchTextSpan textSpan) : IMismatchTe
 
     public int End => MirrorIndex(textSpan.Length, textSpan.Start);
 
-    public string VisibleText => textSpan.VisibleText;
+    public string VisibleText => textSpan.VisibleText.Reversed();
 
     public bool StartTruncated => textSpan.EndTruncated;
 

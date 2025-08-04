@@ -7,7 +7,7 @@ internal class TextSpanFactory(IEqualityComparer<string> comparer)
 {
     private readonly TruncateHelper truncateHelper = new();
 
-    public MismatchContext CreateAggregate(string subject, string expected)
+    public MismatchContext CreateContext(string subject, string expected)
     {
         var mismatch = subject.IndexOfFirstMismatch2(expected, comparer);
         if (mismatch < 0)
@@ -34,10 +34,42 @@ internal class TextSpanFactory(IEqualityComparer<string> comparer)
         };
     }
 
-    public IMismatchTextSpan Create(string text, int mismatchIndex)
+    public MismatchContext CreateContextReversed(string subject, string expected)
     {
-        return new EscapeNewLinesMismatchTextSpanDecorator(new MismatchTextSpan(CreateTextSpan(text, mismatchIndex),
-            mismatchIndex));
+        var lastMismatch = subject.IndexOfLastMismatch(expected, comparer);
+        if (lastMismatch < 0)
+        {
+            throw new NotImplementedException();
+        }
+        var revSubject = subject.Reversed();
+        var revExpected = expected.Reversed();
+        var mismatch = revSubject.IndexOfFirstMismatch(revExpected, comparer);
+
+
+        var range1 = truncateHelper.GetTruncationRange(revSubject, mismatch);
+
+        var subjSpan = TextSpan.Create(revSubject).Subspan(range1);
+
+        var range2 = truncateHelper.GetTruncationRange(revExpected, mismatch);
+        var expSpan = TextSpan.Create(revExpected).Subspan(range2);
+
+        var subj = new EscapeNewLinesMismatchTextSpanDecorator(new ReverseMismatchTextSpan(new MismatchTextSpan(subjSpan, mismatch)));
+        var exp = new EscapeNewLinesMismatchTextSpanDecorator(new ReverseMismatchTextSpan(new MismatchTextSpan(expSpan, mismatch)));
+
+
+
+
+
+        return new MismatchContext
+        {
+            SubjectSpan = subj,
+            ExpectedSpan = exp,
+            AdjustedIndexOfMismatch = subj.MismatchIndex,
+            IndexOfMismatch = lastMismatch,
+            Reversed = true,
+            Subject = subject,
+            Expected = expected
+        };
     }
 
     public IMismatchTextSpan CreateReversed(string text, int mismatchIndex)

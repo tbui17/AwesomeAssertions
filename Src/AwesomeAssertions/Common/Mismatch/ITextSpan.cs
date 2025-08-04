@@ -25,4 +25,6 @@ internal interface IMismatchTextSpan : ITextSpan
 internal static class TextSpanExtensions
 {
     public static int GetRelativeOffset(this ITextSpan textSpan, int index) => textSpan.VisibleText.Take(index + 1).Count(c => c is '\r' or '\n') + index;
+
+    public static int MirrorIndex(this ITextSpan textSpan, int originalIndex) => textSpan.Length - originalIndex - 1;
 }
