@@ -1,33 +1,4 @@
-﻿using System.Linq;
-
-namespace AwesomeAssertions.Common.Mismatch;
-
-internal class MismatchContext
-{
-    public required string Subject { get; init; }
-
-    public required string Expected { get; init; }
-
-    public required ITextSpan SubjectSpan { get; init; }
-
-    public required ITextSpan ExpectedSpan { get; init; }
-
-    public required int AdjustedIndexOfMismatch { get; init; }
-
-    public required int IndexOfMismatch { get; init; }
-
-    public required bool Reversed { get; init; }
-
-    private string MismatchString => Subject[..IndexOfMismatch];
-
-    public int GetMismatchLineNumber() => MismatchString.Count(c => c == '\n') + 1;
-
-    public int GetMismatchColumn()
-    {
-        var indexOfLastNewlineBeforeMismatch = MismatchString.LastIndexOf('\n');
-        return MismatchString.Length - indexOfLastNewlineBeforeMismatch;
-    }
-}
+﻿namespace AwesomeAssertions.Common.Mismatch;
 
 internal class IndexMismatchErrorMessageFactory
 {
@@ -48,7 +19,7 @@ internal class IndexMismatchErrorMessageFactory
         {
             ExpectationDescription = ExpectationDescription,
             LocationDescription = CreateLocationDescription(),
-            MismatchSegment = GetMismatchSegmentImpl()
+            MismatchSegment = GetMismatchSegment()
         };
     }
 
@@ -66,7 +37,7 @@ internal class IndexMismatchErrorMessageFactory
         return $"{prefix} index {indexOfMismatch}";
     }
 
-    private TextSegment GetMismatchSegmentImpl()
+    private TextSegment GetMismatchSegment()
     {
         var subjectEntry = Context.SubjectSpan;
         var expectedEntry = Context.ExpectedSpan;
@@ -78,15 +49,10 @@ internal class IndexMismatchErrorMessageFactory
             whiteSpaceCountBeforeArrow += 1;
         }
 
-        return new TextSegment
+        var segment = new TextSegment
         {
             Lines =
             {
-                new()
-                {
-                    Text = $"{ArrowDown} (actual)",
-                    Indent = whiteSpaceCountBeforeArrow
-                },
                 new()
                 {
                     Text = WrapText(subjectEntry)
@@ -95,13 +61,27 @@ internal class IndexMismatchErrorMessageFactory
                 {
                     Text = WrapText(expectedEntry)
                 },
-                new()
-                {
-                    Text = $"{ArrowUp} (expected)",
-                    Indent = whiteSpaceCountBeforeArrow
-                }
             }
         };
+
+        if (Context.Reversed)
+        {
+            segment.AlignRight();
+        }
+
+
+        segment.Lines.Insert(0, new()
+        {
+            Text = $"{ArrowDown} (actual)",
+            Indent = whiteSpaceCountBeforeArrow
+        });
+        segment.Lines.Add(new()
+        {
+            Text = $"{ArrowUp} (expected)",
+            Indent = whiteSpaceCountBeforeArrow
+        });
+
+        return segment;
     }
 
     private static string WrapText(ITextSpan textSpan)

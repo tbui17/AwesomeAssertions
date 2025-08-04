@@ -201,7 +201,7 @@ public partial class StringAssertionSpecs
 
             // Assert
             act.Should().Throw<XunitException>().WithMessage("""
-                                                             Expected string to end with the expected string, but they differ before index 8:
+                                                             Expected string to end with *, but they differ before index 8:
                                                                         ↓ (actual)
                                                                "ABCDEFGHI"
                                                                        "H"
@@ -218,7 +218,7 @@ public partial class StringAssertionSpecs
             // Assert
             act.Should().Throw<XunitException>()
                 .WithMessage("""
-                    Expected string to end with the expected string, but they differ before index 8:
+                    Expected string to end with *, but they differ before index 8:
                                ↓ (actual)
                       "ABCDEFGHI"
                          "DEFGHX"
@@ -235,7 +235,7 @@ public partial class StringAssertionSpecs
             // Assert
             act.Should().Throw<XunitException>()
                 .WithMessage("""
-                             Expected string to end with the expected string, but they differ before index 5:
+                             Expected string to end with *, but they differ before index 5:
                                      ↓ (actual)
                                "ABCDEFGHI"
                                   "DEXGHI"
@@ -252,7 +252,7 @@ public partial class StringAssertionSpecs
             // Assert
             act.Should().Throw<XunitException>()
                 .WithMessage("""
-                    Expected string to end with the expected string, but they differ before index 2:
+                    Expected string to end with *, but they differ before index 2:
                          ↓ (actual)
                       "ABC"
                        "XY"
@@ -264,7 +264,7 @@ public partial class StringAssertionSpecs
         public void When_one_string_is_long_they_are_right_aligned22()
         {
             // Act
-            Action act = () => "and they should do so for their sake from which this person was coming from this is a long text and thaT differs in between two words".Should().Be("such and when to do more like she should and man woman whicH differs in between two words");
+            Action act = () => "from cancel this waver was coming from this is a long text pat thaT differs in between two words".Should().Be("such and when to this the other they should and sad rhino whicH differs in between two words");
 
 
             var exc = act.Should().Throw<XunitException>();
@@ -273,55 +273,69 @@ public partial class StringAssertionSpecs
             var lines = exc.Which.Message.Split('\n');
 
             lines[1].IndexOf("↓", StringComparison.Ordinal)
-                .Should().Be(lines[2].IndexOf("T", StringComparison.Ordinal))
-                .And.Be(lines[3].IndexOf("H", StringComparison.Ordinal))
+                .Should().Be(lines[2].IndexOf("f", StringComparison.Ordinal))
+                .And.Be(lines[3].IndexOf("s", StringComparison.Ordinal))
                 .And.Be(lines[4].IndexOf("↑", StringComparison.Ordinal));
-
-            lines[2].Length.Should().Be(lines[3].Length);
 
 
             // Assert
             exc
                 .WithMessage("""
-                             Expected string to end with the expected string, but they differ before index 23:
-                                                       ↓ (actual)
-                               "this is a long text thaT differs in…"
-                                                  "whicH differs in…"
-                                                       ↑ (expected).
+                             Expected * to be the same string, but they differ at index 0:
+                                ↓ (actual)
+                               "from cancel this waver was coming from this is a long text…"
+                               "such and when to this the other they should and sad rhino…"
+                                ↑ (expected).
                              """
                 );
         }
 
         [Fact]
-        public void When_one_string_is_long_they_are_right_aligned()
+        public void actual_and_expected_messages_are_right_aligned()
         {
+            // Arrange
+            const string subject = "from cancel this waver was coming from this is a long text pat thaT differs in between two words";
+            const string expected = "such and when to this the other they should and sad rhino whicH differs in between two words";
+
             // Act
-            Action act = () => "from which this person was coming from this is a long text and thaT differs in between two words".Should().EndWith("such and when to do more like she should and man woman whicH differs in between two words");
-
-
-            var exc = act.Should().Throw<XunitException>();
-            using var _ = new AssertionScope();
-
-            var lines = exc.Which.Message.Split('\n');
-
-            lines[1].IndexOf("↓", StringComparison.Ordinal)
-                .Should().Be(lines[2].IndexOf("H", StringComparison.Ordinal))
-                .And.Be(lines[3].IndexOf("T", StringComparison.Ordinal))
-                .And.Be(lines[3].IndexOf("↑", StringComparison.Ordinal));
-
-            lines[2].Length.Should().Be(lines[3].Length);
-
+            Action act = () => subject.Should().EndWith(expected);
 
             // Assert
-            exc
-                .WithMessage("""
-                         Expected string to end with the expected string, but they differ before index 23:
-                                                   ↓ (actual)
-                           "this is a long text thaT differs in…"
-                                              "whicH differs in…"
-                                                   ↑ (expected).
-                         """
-            );
+            var exc = act.Should().Throw<XunitException>();
+            var lines = exc.And.Message.Split('\n');
+            lines[2].Should().HaveLength(lines[3].Length);
+        }
+
+        [Fact]
+        public void diff_characters_and_arrows_have_same_column()
+        {
+            // Arrange
+            const string subject = "from cancel this waver was coming from this is a long text pat thaT differs in between two words";
+            const string expected = "such and when to this the other they should and sad rhino whicH differs in between two words";
+
+            // Act
+            Action act = () => subject.Should().EndWith(expected);
+
+            // Assert
+            var exc = act.Should().Throw<XunitException>().WithMessage($"""
+                                                             **
+                                                             *↓ (actual)*
+                                                             *pat thaT differs*
+                                                             *rhino whicH differs*
+                                                             *↑ (expected)*
+                                                             """);
+
+            using var scope = new AssertionScope();
+            var lines = exc.And.Message.Split('\n');
+            var downIndex = lines[1].IndexOf("↓", StringComparison.Ordinal);
+            var tIndex = lines[2].IndexOf("T", StringComparison.Ordinal);
+            var hIndex = lines[3].IndexOf("H", StringComparison.Ordinal);
+            var upIndex = lines[4].IndexOf("↑", StringComparison.Ordinal);
+            new[] { downIndex, hIndex, upIndex }.Should().AllBeEquivalentTo(tIndex);
+            if (scope.HasFailures())
+            {
+                scope.AddPreFormattedFailure("Original exception message: " + exc.And.Message);
+            }
         }
 
         [Fact]

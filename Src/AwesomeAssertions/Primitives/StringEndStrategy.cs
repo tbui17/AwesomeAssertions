@@ -36,6 +36,14 @@ internal class StringEndStrategy : IStringComparisonStrategy
             return;
         }
 
-        assertionChain.FailWith(IndexMismatchErrorMessageFactory2.CreateFailureMessage(ExpectationDescription, subject, expected, indexOfMismatch));
+        var ctx = new TextSpanFactory(comparer).CreateContextReversed(subject, expected);
+
+        var fac = new IndexMismatchErrorMessageFactory()
+        {
+            ExpectationDescription = ExpectationDescription,
+            Context = ctx
+        };
+
+        assertionChain.FailWith(fac.Create());
     }
 }

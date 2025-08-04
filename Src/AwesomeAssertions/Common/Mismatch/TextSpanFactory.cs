@@ -56,10 +56,6 @@ internal class TextSpanFactory(IEqualityComparer<string> comparer)
         var subj = new EscapeNewLinesMismatchTextSpanDecorator(new ReverseMismatchTextSpan(new MismatchTextSpan(subjSpan, mismatch)));
         var exp = new EscapeNewLinesMismatchTextSpanDecorator(new ReverseMismatchTextSpan(new MismatchTextSpan(expSpan, mismatch)));
 
-
-
-
-
         return new MismatchContext
         {
             SubjectSpan = subj,
@@ -70,19 +66,5 @@ internal class TextSpanFactory(IEqualityComparer<string> comparer)
             Subject = subject,
             Expected = expected
         };
-    }
-
-    public IMismatchTextSpan CreateReversed(string text, int mismatchIndex)
-    {
-        return new EscapeNewLinesMismatchTextSpanDecorator(
-            new ReverseMismatchTextSpan(new MismatchTextSpan(CreateTextSpan(text, mismatchIndex), mismatchIndex)));
-    }
-
-    private SubTextSpan CreateTextSpan(string text, int mismatchIndex)
-    {
-        var range = truncateHelper.GetTruncationRange(text, mismatchIndex);
-
-        var span = TextSpan.Create(text).Subspan(range);
-        return span;
     }
 }

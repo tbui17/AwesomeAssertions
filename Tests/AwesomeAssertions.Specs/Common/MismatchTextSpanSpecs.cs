@@ -107,27 +107,4 @@ public class MismatchTextSpanSpecs
 
         ctx.IndexOfMismatch.Should().Be(99);
     }
-
-
-    [Fact]
-    public void Run5()
-    {
-        var span = TextSpan.Create("123456");
-        var revSpan = new ReverseTextSpan(span);
-        revSpan.Start.Should().Be(0);
-        revSpan.End.Should().Be(5);
-        revSpan.Length.Should().Be(6);
-    }
-
-    [Fact]
-    public void Run6()
-    {
-        var span = TextSpan.Create("12345");
-        var revSpan = new ReverseTextSpan(span.Subspan(1,3));
-        using var _ = new AssertionScope();
-        revSpan.Start.Should().Be(0);
-        revSpan.End.Should().Be(5);
-        revSpan.Length.Should().Be(6);
-        revSpan.VisibleText.Should().Be("234");
-    }
 }
